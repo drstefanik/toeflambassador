@@ -1,7 +1,8 @@
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 import { CentersDirectoryClient } from "@/components/centers-directory-client";
 import { getActiveCenters } from "@/lib/repositories/centers";
-
-export const revalidate = 60;
 
 export default async function SediPage() {
   let centers = [] as Awaited<ReturnType<typeof getActiveCenters>>;
