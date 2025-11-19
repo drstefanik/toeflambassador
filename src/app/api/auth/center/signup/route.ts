@@ -3,7 +3,6 @@ import { hashPassword, setAuthCookie, signToken } from "@/lib/auth";
 import { sendEmail } from "@/lib/email";
 import { getCenterBySlug } from "@/lib/repositories/centers";
 import {
-  createCenterUserWithOTP,
   findCenterUserByEmail,
   linkCenterUserToCenter,
   markOTPUsed,
@@ -24,12 +23,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Centro non trovato" }, { status: 400 });
     }
 
-    let centerUser = await findCenterUserByEmail(email);
-    if (!centerUser) {
-      centerUser = await createCenterUserWithOTP({ email, centerId: center.id, otp });
-    }
-
-    if (!centerUser.fields.OTP || centerUser.fields.OTP !== otp || centerUser.fields.OTPUsed) {
+    const centerUser = await findCenterUserByEmail(email);
+    if (
+      !centerUser ||
+      !centerUser.fields.OTP ||
+      centerUser.fields.OTP !== otp ||
+      centerUser.fields.OTPUsed
+    ) {
       return NextResponse.json({ error: "OTP non valido" }, { status: 401 });
     }
 

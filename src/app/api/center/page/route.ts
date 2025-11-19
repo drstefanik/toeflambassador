@@ -9,8 +9,12 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
     }
 
-    const { centerId, fields } = await request.json();
-    const targetId = centerId || user.centerId;
+    const { fields } = await request.json();
+    const targetId = user.centerId;
+
+    if (!targetId) {
+      return NextResponse.json({ error: "Centro non trovato" }, { status: 400 });
+    }
 
     const updated = await updateCenterFields(targetId, fields);
     return NextResponse.json({ success: true, center: updated });
