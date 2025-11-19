@@ -2,7 +2,12 @@ import { getActiveCenters } from "@/lib/repositories/centers";
 import { SignupCenterForm } from "./signup-center-form";
 
 export default async function SignupCenterPage() {
-  const centers = await getActiveCenters();
+  let centers = [] as Awaited<ReturnType<typeof getActiveCenters>>;
+  try {
+    centers = await getActiveCenters();
+  } catch (error) {
+    console.warn("Impossibile caricare i centri attivi", error);
+  }
   return (
     <div className="mx-auto max-w-3xl px-4 py-16">
       <h1 className="text-4xl font-bold text-slate-900">Attiva il tuo centro</h1>

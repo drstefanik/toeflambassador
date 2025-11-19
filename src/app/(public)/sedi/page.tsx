@@ -1,10 +1,15 @@
-import { CentersDirectory } from "@/components/centers-directory";
+import { CentersDirectoryClient } from "@/components/centers-directory-client";
 import { getActiveCenters } from "@/lib/repositories/centers";
 
 export const revalidate = 60;
 
 export default async function SediPage() {
-  const centers = await getActiveCenters();
+  let centers = [] as Awaited<ReturnType<typeof getActiveCenters>>;
+  try {
+    centers = await getActiveCenters();
+  } catch (error) {
+    console.warn("Impossibile caricare la lista centri", error);
+  }
   const points = centers.map((center) => ({
     id: center.id,
     name: center.name,
@@ -28,7 +33,7 @@ export default async function SediPage() {
           Esplora la mappa interattiva e visita la pagina dedicata di ogni centro.
         </p>
         <div className="mt-10">
-          <CentersDirectory centers={points} />
+          <CentersDirectoryClient centers={points} />
         </div>
       </section>
     </div>

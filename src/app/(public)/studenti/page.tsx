@@ -4,8 +4,8 @@ import { studentiContent } from "@/content/studenti";
 import { env } from "@/lib/config";
 import { getUserFromRequest } from "@/lib/auth";
 
-export default function StudentiPage() {
-  const user = getUserFromRequest();
+export default async function StudentiPage() {
+  const user = await getUserFromRequest();
   const isStudent = user?.role === "student";
 
   return (

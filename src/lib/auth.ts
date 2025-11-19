@@ -70,8 +70,11 @@ export function clearAuthCookies(res: NextResponse) {
   res.cookies.delete(CENTER_COOKIE);
 }
 
-export function getUserFromRequest(req?: NextRequest) {
-  const cookieStore = req ? req.cookies : cookies();
+type CookieStore = Pick<Awaited<ReturnType<typeof cookies>>, "get">;
+
+export async function getUserFromRequest(req?: NextRequest) {
+  const cookieStore: CookieStore = req ? req.cookies : await cookies();
+
   const studentToken = cookieStore.get(STUDENT_COOKIE)?.value;
   const centerToken = cookieStore.get(CENTER_COOKIE)?.value;
 

@@ -5,7 +5,7 @@ import { fetchStudentById } from "@/lib/repositories/students";
 import { redirect } from "next/navigation";
 
 export default async function StudentDashboardPage() {
-  const user = getUserFromRequest();
+  const user = await getUserFromRequest();
   if (!user || user.role !== "student") {
     redirect("/login-student");
   }

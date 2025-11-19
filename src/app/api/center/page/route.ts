@@ -4,7 +4,7 @@ import { updateCenterFields } from "@/lib/repositories/centers";
 
 export async function PATCH(request: NextRequest) {
   try {
-    const user = getUserFromRequest(request);
+    const user = await getUserFromRequest(request);
     if (!user || user.role !== "center") {
       return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
     }

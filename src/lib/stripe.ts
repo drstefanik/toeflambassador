@@ -6,5 +6,5 @@ if (!env.STRIPE_API_KEY) {
 }
 
 export const stripe = new Stripe(env.STRIPE_API_KEY || "sk_test_missing", {
-  apiVersion: "2024-06-20",
+  apiVersion: "2024-06-20" as Stripe.LatestApiVersion,
 });

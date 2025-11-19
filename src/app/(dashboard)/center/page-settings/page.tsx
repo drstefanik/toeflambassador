@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { PageSettingsForm } from "./settings-form";
 
 export default async function CenterPageSettings() {
-  const user = getUserFromRequest();
+  const user = await getUserFromRequest();
   if (!user || user.role !== "center") {
     redirect("/login-center");
   }

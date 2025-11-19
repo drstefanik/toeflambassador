@@ -8,7 +8,7 @@ const FALLBACK_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
 export async function POST(request: NextRequest) {
   try {
-    const user = getUserFromRequest(request);
+    const user = await getUserFromRequest(request);
     if (!user || user.role !== "center") {
       return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
     }

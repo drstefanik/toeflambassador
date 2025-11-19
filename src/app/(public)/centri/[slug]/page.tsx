@@ -4,10 +4,15 @@ import { CenterContactForm } from "@/components/center-contact-form";
 import { getAllCentersForStaticPaths, getCenterBySlug } from "@/lib/repositories/centers";
 
 export async function generateStaticParams() {
-  const centers = await getAllCentersForStaticPaths();
-  return centers
-    .filter((center) => center.slug)
-    .map((center) => ({ slug: center.slug as string }));
+  try {
+    const centers = await getAllCentersForStaticPaths();
+    return centers
+      .filter((center) => center.slug)
+      .map((center) => ({ slug: center.slug as string }));
+  } catch (error) {
+    console.warn("Impossibile generare gli slug dei centri", error);
+    return [];
+  }
 }
 
 interface PageProps {
@@ -16,7 +21,12 @@ interface PageProps {
 
 export default async function CenterPublicPage({ params }: PageProps) {
   const { slug } = params;
-  const center = await getCenterBySlug(slug);
+  let center = null;
+  try {
+    center = await getCenterBySlug(slug);
+  } catch (error) {
+    console.error(`Impossibile caricare il centro ${slug}`, error);
+  }
 
   if (!center) {
     notFound();

@@ -5,7 +5,7 @@ import { getCenterById } from "@/lib/repositories/centers";
 import { redirect } from "next/navigation";
 
 export default async function CenterDashboardPage() {
-  const user = getUserFromRequest();
+  const user = await getUserFromRequest();
   if (!user || user.role !== "center") {
     redirect("/login-center");
   }
