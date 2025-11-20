@@ -8,9 +8,9 @@ import L from "leaflet";
 export interface CenterPoint {
   id: string;
   name: string;
-  city?: string;
-  latitude?: number;
-  longitude?: number;
+  city?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 interface Props {

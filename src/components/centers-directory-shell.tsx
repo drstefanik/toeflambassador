@@ -7,7 +7,7 @@ type CenterPoint = {
   id: string;
   name: string;
   city?: string | null;
-  slug: string;
+  slug?: string | null;
   address?: string | null;
   latitude?: number | null;
   longitude?: number | null;

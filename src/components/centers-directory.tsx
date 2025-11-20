@@ -5,8 +5,8 @@ import { useMemo, useRef } from "react";
 import { CenterPoint, CentersMap } from "./centers-map";
 
 interface CenterCard extends CenterPoint {
-  address?: string;
-  slug?: string;
+  address?: string | null;
+  slug?: string | null;
 }
 
 interface Props {
