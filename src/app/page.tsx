@@ -7,18 +7,17 @@ export default function HomePage() {
     <div className="bg-gradient-to-b from-white via-slate-50 to-[#F0FF96]/30">
       {/* HERO */}
       <section className="relative mx-auto flex max-w-6xl flex-col items-center gap-10 px-4 pt-16 pb-20 text-center sm:pt-24">
-
         {/* Background image */}
-        <div
-          className="absolute inset-0 -z-10"
-          aria-hidden="true"
-          style={{
-            backgroundImage: `url('/homeheropic.jpg')`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            opacity: 0.3,
-          }}
-        />
+        <div className="absolute inset-0 -z-10 overflow-hidden">
+          <Image
+            src="/homeheropic.jpg"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover opacity-30"
+          />
+        </div>
 
         {/* Glow periwinkle dietro al contenuto */}
         <div
