@@ -1,7 +1,7 @@
 // src/content/footer.ts
 
 export const footerContent = {
-  brandLine: "TOEFL Ambassador – Programma ufficiale ETS per il TOEFL iBT® in Italia.",
+  brandLine: "TOEFL Ambassador – Programma ufficiale ETS per il TOEFL iBT®.",
   description:
     "Supportiamo centri, scuole, università e studenti nell’intero percorso verso la certificazione TOEFL iBT®: orientamento, registrazione ufficiale ETS e assistenza post-esame.",
 
@@ -13,7 +13,6 @@ export const footerContent = {
   ],
 
   secondaryLinks: [
-    { label: "Prenota una consulenza", href: "/studenti#consulenza" },
     { label: "Diventa Partner TOEFL Ambassador", href: "/centri#form" },
     // da aggiornare quando avrai le pagine legali
     { label: "Informativa privacy", href: "/privacy" },
@@ -24,8 +23,7 @@ export const footerContent = {
     title: "Contatti",
     lines: [
       "Email: info@toeflambassador.org",
-      "Per candidature dei centri: partners@toeflambassador.org",
-      "Per studenti e candidati: support@toeflambassador.org",
+      "Per candidature dei centri: direzione@toeflambassador.org",
     ],
   },
 
