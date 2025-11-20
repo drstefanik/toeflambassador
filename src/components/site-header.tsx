@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { CtaButton } from "@/components/cta-button";
 import { navigationContent } from "@/content/navigation";
 
 export function SiteHeader() {
@@ -46,7 +45,8 @@ export function SiteHeader() {
         ref={navRef}
         className="relative mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:py-4"
       >
-        <Link href="/" className="flex items-center gap-3">
+        {/* Logo + tagline (tagline sotto al logo) */}
+        <Link href="/" className="flex flex-col items-start gap-1">
           <Image
             src="/toefl-ambassador-logo.png"
             alt="TOEFL Ambassador logo"
@@ -54,11 +54,12 @@ export function SiteHeader() {
             height={64}
             priority
           />
-          <span className="hidden text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 sm:inline">
+          <span className="hidden text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-600 sm:inline">
             {navigationContent.tagline}
           </span>
         </Link>
 
+        {/* Mobile hamburger */}
         <div className="flex items-center gap-3 lg:hidden">
           <button
             type="button"
@@ -89,6 +90,7 @@ export function SiteHeader() {
           </button>
         </div>
 
+        {/* Desktop nav */}
         <div className="hidden items-center gap-6 lg:flex">
           <nav className="flex items-center gap-4 text-sm font-semibold text-slate-700">
             {navigationContent.navItems.map((item) => {
@@ -111,12 +113,7 @@ export function SiteHeader() {
               const isActive = isActiveLink(item.href);
 
               return (
-                <div
-                  key={item.href}
-                  className="relative"
-                  onMouseEnter={() => setOpenMenu(item.label)}
-                  onMouseLeave={() => setOpenMenu(null)}
-                >
+                <div key={item.href} className="relative">
                   <button
                     type="button"
                     onClick={() => setOpenMenu(isOpen ? null : item.label)}
@@ -143,14 +140,14 @@ export function SiteHeader() {
                       <ul className="space-y-1 text-sm">
                         {item.children.map((child) => (
                           <li key={child.href}>
-                          <Link
-                            href={child.href}
-                            onClick={handleNavigate}
-                            className={`flex rounded-xl px-3 py-2 transition hover:bg-slate-50 hover:text-slate-900 ${
-                              isActiveLink(child.href) ? "bg-slate-100 text-slate-900" : ""
-                            }`}
-                          >
-                            {child.label}
+                            <Link
+                              href={child.href}
+                              onClick={handleNavigate}
+                              className={`flex rounded-xl px-3 py-2 transition hover:bg-slate-50 hover:text-slate-900 ${
+                                isActiveLink(child.href) ? "bg-slate-100 text-slate-900" : ""
+                              }`}
+                            >
+                              {child.label}
                             </Link>
                           </li>
                         ))}
@@ -161,11 +158,10 @@ export function SiteHeader() {
               );
             })}
           </nav>
-          <CtaButton href={navigationContent.primaryCta.href} size="sm">
-            {navigationContent.primaryCta.label}
-          </CtaButton>
+          {/* CTA rimosso per non mostrare la consulenza agli studenti */}
         </div>
 
+        {/* Mobile nav */}
         {isMobileOpen && (
           <div className="absolute left-0 right-0 top-full border-t border-slate-200 bg-white shadow-lg lg:hidden">
             <div className="flex flex-col gap-2 px-4 py-4 text-sm font-semibold text-slate-800">
@@ -219,7 +215,9 @@ export function SiteHeader() {
                                 href={child.href}
                                 onClick={handleNavigate}
                                 className={`block px-4 py-3 text-[15px] transition hover:bg-white ${
-                                  isActiveLink(child.href) ? "bg-white text-slate-900" : "text-slate-700"
+                                  isActiveLink(child.href)
+                                    ? "bg-white text-slate-900"
+                                    : "text-slate-700"
                                 }`}
                               >
                                 {child.label}
@@ -232,11 +230,8 @@ export function SiteHeader() {
                   </div>
                 );
               })}
-              <div className="pt-2">
-                <CtaButton className="w-full" href={navigationContent.primaryCta.href} size="sm">
-                  {navigationContent.primaryCta.label}
-                </CtaButton>
-              </div>
+
+              {/* CTA mobile rimosso */}
             </div>
           </div>
         )}
