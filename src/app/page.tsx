@@ -13,7 +13,7 @@ export default function HomePage() {
           fill
           priority
           sizes="100vw"
-          className="object-cover opacity-30"
+          className="object-cover opacity-50"
         />
       </div>
 
