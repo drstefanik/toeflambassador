@@ -25,7 +25,7 @@ export default function HomePage() {
 
           {/* Eyebrow */}
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-700">
-            Programma ufficiale <span className="text-slate-900">TOEFL®</span>
+            Programma ufficiale <span className="text-slate-900">ETS TOEFL iBT®</span>
           </p>
 
           {/* Titolo + sottotitolo */}
