@@ -26,6 +26,19 @@ export default function PartnerPage() {
           </CtaButton>
         </div>
 
+        <div className="mt-8 rounded-3xl border border-slate-200 bg-white/80 p-6 shadow-sm">
+          <h2 className="text-xl font-semibold text-slate-900">Accesso partner</h2>
+          <p className="mt-2 text-slate-700">
+            Entra nell&rsquo;area riservata o attiva il tuo centro con l&rsquo;OTP fornito dal team ETS.
+          </p>
+          <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+            <CtaButton href="/login-center" variant="secondary">
+              Login centri
+            </CtaButton>
+            <CtaButton href="/signup-center">Attiva il tuo centro</CtaButton>
+          </div>
+        </div>
+
         <div className="mt-12 grid gap-6 sm:grid-cols-2">
           {partnerLinks.map((link) => (
             <article
