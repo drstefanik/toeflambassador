@@ -116,10 +116,6 @@ export default async function CenterPublicPage({ params }: PageProps) {
           </div>
         </section>
       )}
-
-      <section className="bg-slate-900 py-10 text-center text-sm text-white">
-        <p>TOEFL Ambassador • Programma ufficiale ETS</p>
-      </section>
     </div>
   );
 }
