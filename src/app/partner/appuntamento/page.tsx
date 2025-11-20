@@ -1,7 +1,12 @@
+"use client";
+
+import { useState } from "react";
 import { CtaButton } from "@/components/cta-button";
 import { env } from "@/lib/config";
 
 export default function AppuntamentoPage() {
+  const [isCalendlyLoading, setIsCalendlyLoading] = useState(true);
+
   return (
     <div className="bg-gradient-to-b from-white via-slate-50 to-[#F0FF96]/30">
       <section className="mx-auto max-w-5xl px-4 py-16 sm:py-20">
@@ -27,7 +32,14 @@ export default function AppuntamentoPage() {
         </div>
 
         <div className="mt-10 rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm">
-          <h2 className="text-2xl font-semibold text-slate-900">
+          {/* Step header */}
+          <div className="inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-sky-700">
+            <span>Step 1</span>
+            <span className="h-3 w-[1px] bg-sky-300" />
+            <span>Prenota la call conoscitiva</span>
+          </div>
+
+          <h2 className="mt-4 text-2xl font-semibold text-slate-900">
             Prenota tramite calendario
           </h2>
           <p className="mt-2 text-slate-700">
@@ -36,21 +48,31 @@ export default function AppuntamentoPage() {
           </p>
 
           {env.NEXT_PUBLIC_CALENDLY_CENTER_URL ? (
-            <div className="mt-6 w-full">
+            <div className="mt-5 w-full">
+              {/* Loader sopra il Calendly */}
+              {isCalendlyLoading && (
+                <div className="mb-4 flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+                  <span className="inline-flex h-4 w-4 animate-spin rounded-full border-2 border-sky-500 border-t-transparent" />
+                  <span>Caricamento calendario in corso…</span>
+                </div>
+              )}
+
               <iframe
                 src={env.NEXT_PUBLIC_CALENDLY_CENTER_URL}
-                className="w-full rounded-2xl border"
+                className="w-full rounded-2xl border border-slate-200"
                 style={{
-                  height: "900px",
-                  minHeight: "900px",
+                  // altezza diversa per mobile / desktop, senza wrap interno
+                  height: "950px", // fallback
+                  minHeight: "850px",
                   border: "none",
                 }}
                 title="Calendly Partner"
                 loading="lazy"
+                onLoad={() => setIsCalendlyLoading(false)}
               ></iframe>
             </div>
           ) : (
-            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <div className="mt-5 grid gap-4 sm:grid-cols-2">
               <form
                 className="space-y-3 rounded-2xl border border-slate-100 bg-slate-50 p-4"
                 action="mailto:partners@toeflambassador.org"
@@ -119,7 +141,8 @@ export default function AppuntamentoPage() {
                   <span className="font-semibold">
                     partners@toeflambassador.org
                   </span>{" "}
-                  indicando il tuo ruolo e i servizi che vorresti offrire.
+                  indicando il tuo ruolo e i servizi che vorresti offrire. Ti
+                  contatteremo con una proposta dedicata.
                 </p>
                 <p className="mt-3 text-slate-700">
                   Puoi anche consultare la sezione{" "}
