@@ -4,6 +4,7 @@ export const navigationContent = {
     navItems: [
     { label: "Home", href: "/" },
     { label: "About us", href: "/about" },
+    { label: "Elenco sedi", href: "/partner/sedi" },
     {
       label: "Partner",
       href: "/partner",
@@ -12,7 +13,6 @@ export const navigationContent = {
         { label: "Vantaggi", href: "/partner/vantaggi" },
         { label: "Come funziona", href: "/partner/come-funziona" },
         { label: "Fissa un appuntamento", href: "/partner/appuntamento" },
-        { label: "Elenco sedi", href: "/partner/sedi" },
       ],
     },
     {
