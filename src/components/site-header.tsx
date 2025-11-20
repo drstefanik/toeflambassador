@@ -46,18 +46,18 @@ export function SiteHeader() {
         className="relative mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:py-4"
       >
         {/* Logo + tagline (tagline sotto al logo) */}
-        <Link href="/" className="flex flex-col items-start gap-1">
-          <Image
-            src="/toefl-ambassador-logo.png"
-            alt="TOEFL Ambassador logo"
-            width={160}
-            height={64}
-            priority
-          />
-          <span className="hidden text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-600 sm:inline">
-            {navigationContent.tagline}
-          </span>
-        </Link>
+<Link href="/" className="flex flex-col items-center gap-1 sm:items-center">
+  <Image
+    src="/toefl-ambassador-logo.png"
+    alt="TOEFL Ambassador logo"
+    width={160}
+    height={64}
+    priority
+  />
+  <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-600">
+    PROGRAMMA UFFICIALE ETS PER IL TOEFL iBT®
+  </span>
+</Link>
 
         {/* Mobile hamburger */}
         <div className="flex items-center gap-3 lg:hidden">
