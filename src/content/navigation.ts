@@ -13,6 +13,8 @@ export const navigationContent = {
         { label: "Vantaggi", href: "/partner/vantaggi" },
         { label: "Come funziona", href: "/partner/come-funziona" },
         { label: "Fissa un appuntamento", href: "/partner/appuntamento" },
+        { label: "Login centri", href: "/login-center" },
+        { label: "Attiva il tuo centro", href: "/signup-center" },
       ],
     },
     {
@@ -24,6 +26,8 @@ export const navigationContent = {
         { label: "Prenota la consulenza gratuita", href: "/student/prenota-consulenza" },
         { label: "Prenota il tuo esame", href: "/student/prenota-esame" },
         { label: "Acquista il tuo esame TOEFL iBT", href: "/student/acquista-toefl-ibt" },
+        { label: "Login studenti", href: "/login-student" },
+        { label: "Registrazione studenti", href: "/signup-student" },
       ],
     },
   ],

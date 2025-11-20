@@ -26,6 +26,19 @@ export default function StudentPage() {
           </CtaButton>
         </div>
 
+        <div className="mt-8 rounded-3xl border border-slate-200 bg-white/80 p-6 shadow-sm">
+          <h2 className="text-xl font-semibold text-slate-900">Accesso studenti</h2>
+          <p className="mt-2 text-slate-700">
+            Accedi alla dashboard per gestire gli acquisti oppure crea un nuovo account in pochi passaggi.
+          </p>
+          <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+            <CtaButton href="/login-student" variant="secondary">
+              Login studenti
+            </CtaButton>
+            <CtaButton href="/signup-student">Registrazione studenti</CtaButton>
+          </div>
+        </div>
+
         <div className="mt-12 grid gap-6 sm:grid-cols-2">
           {studentLinks.map((link) => (
             <article
