@@ -1,6 +1,6 @@
 import { CheckoutButton } from "@/components/checkout-button";
 import { CtaButton } from "@/components/cta-button";
-import { studentiContent } from "@/content/studenti";
+import { studentsContent as studentiContent } from "@/content/studenti";
 import { env } from "@/lib/config";
 import { getUserFromRequest } from "@/lib/auth";
 
