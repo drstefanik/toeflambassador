@@ -35,7 +35,7 @@ Configura le seguenti chiavi (puoi usare `.env.local` in sviluppo):
 | `TOEFL_iBT_Voucher_ID` | Price ID Stripe per il voucher studente |
 | `TOEFL_Ambassador_Activation_Pack_ID` | Price ID Stripe per il kit centro |
 | `STRIPE_WEBHOOK_SECRET` | Firma webhook Stripe |
-| `JWT_SECRET` | Segreto per i token JWT |
+| `JWT_SECRET` | Segreto per i token JWT (se assente usa `NEXTAUTH_SECRET` oppure un segreto temporaneo generato a runtime) |
 | `EMAIL_API_KEY` / `EMAIL_FROM` | Credenziali provider email |
 | `NEXT_PUBLIC_CALENDLY_STUDENT_URL` | URL Calendly studenti |
 | `NEXT_PUBLIC_CALENDLY_CENTER_URL` | URL Calendly centri |
