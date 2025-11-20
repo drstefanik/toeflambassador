@@ -45,7 +45,7 @@ export function SiteHeader() {
         ref={navRef}
         className="relative mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:py-4"
       >
-        {/* Logo + tagline (tagline sotto al logo) */}
+        {/* Logo */}
 <Link href="/" className="flex flex-col items-center gap-1 sm:items-center">
   <Image
     src="/toefl-ambassador-logo.png"
@@ -54,9 +54,6 @@ export function SiteHeader() {
     height={64}
     priority
   />
-  <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-600">
-    PROGRAMMA UFFICIALE ETS PER IL TOEFL iBT®
-  </span>
 </Link>
 
         {/* Mobile hamburger */}
