@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 import { CtaButton } from "@/components/cta-button";
-import { centriContent } from "@/content/centri";
+import { centersContent as centriContent } from "@/content/centri";
 import { env } from "@/lib/config";
 
 export default function CentriPage() {
