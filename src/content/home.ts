@@ -2,7 +2,7 @@
 
 export const homeContent = {
   hero: {
-    eyebrow: "Programma ufficiale ETS",
+    eyebrow: "Programma ufficiale ETS TOEFL iBT®",
     title: "TOEFL Ambassador: il programma ufficiale per partner e studenti",
     subtitle:
       "La rete ETS che supporta scuole, università, centri di formazione e studenti nel percorso TOEFL iBT®. Orientamento, registrazione e materiali ufficiali in un unico punto di riferimento.",
