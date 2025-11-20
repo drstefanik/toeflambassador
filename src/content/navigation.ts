@@ -23,7 +23,6 @@ export const navigationContent = {
       children: [
         { label: "L’esame TOEFL", href: "/student/esame-toefl" },
         { label: "Riconoscimenti", href: "/student/riconoscimenti" },
-        { label: "Prenota la consulenza gratuita", href: "/student/prenota-consulenza" },
         { label: "Prenota il tuo esame", href: "/student/prenota-esame" },
         { label: "Acquista il tuo esame TOEFL iBT", href: "/student/acquista-toefl-ibt" },
         { label: "Login studenti", href: "/login-student" },
@@ -32,7 +31,7 @@ export const navigationContent = {
     },
   ],
   primaryCta: {
-    label: "Prenota una consulenza",
-    href: "/student/prenota-consulenza",
+    label: "Prenota il tuo esame",
+    href: "/student/prenota-esame",
   },
 };
