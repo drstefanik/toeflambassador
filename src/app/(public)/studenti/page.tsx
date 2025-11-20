@@ -26,23 +26,6 @@ export default async function StudentiPage() {
         </p>
       </section>
 
-      {/* SEZIONI INFO */}
-      <section className="bg-slate-50 py-16">
-        <div className="mx-auto grid max-w-5xl gap-8 px-4 md:grid-cols-3">
-          {studentiContent.sections.map((section) => (
-            <article
-              key={section.title}
-              className="rounded-3xl bg-white p-6 shadow-sm"
-            >
-              <h2 className="text-xl font-semibold text-slate-900">
-                {section.title}
-              </h2>
-              <p className="mt-2 text-slate-600">{section.body}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
       {/* CALENDLY CONSULENZA */}
       <section className="mx-auto max-w-5xl px-4 py-16">
         <h2 className="text-2xl font-semibold text-slate-900">
