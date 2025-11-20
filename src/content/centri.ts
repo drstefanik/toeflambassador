@@ -3,11 +3,11 @@
 export const centersContent = {
   hero: {
     eyebrow: "Per scuole, enti e professionisti",
-    title: "Diventa Partner TOEFL Ambassador",
+    title: "Diventa sede TOEFL Ambassador",
     subtitle:
       "Entra in una rete certificata di eccellenza nella formazione linguistica e offri ai tuoi studenti o clienti l’accesso al TOEFL iBT®, la certificazione più riconosciuta a livello globale.",
     primaryCta: {
-      label: "Richiedi di diventare Partner",
+      label: "Richiedi di diventare sede",
       href: "/centri#form",
     },
     secondaryCta: {
@@ -42,9 +42,9 @@ export const centersContent = {
   },
 
   benefits: {
-    title: "Vantaggi per i Partner",
+    title: "Vantaggi per le sedi",
     intro:
-      "Diventare Partner TOEFL Ambassador significa rafforzare il proprio brand, ottenere riconoscimento istituzionale e beneficiare di un supporto continuo da parte del nostro team.",
+      "Diventare sede TOEFL Ambassador significa rafforzare il proprio brand, ottenere riconoscimento istituzionale e beneficiare di un supporto continuo da parte del nostro team.",
     items: [
       {
         title: "Riconoscimento istituzionale",
@@ -52,7 +52,7 @@ export const centersContent = {
       },
       {
         title: "Visibilità e posizionamento",
-        body: "Ogni partner è inserito nella rete ufficiale TOEFL Ambassador, con presenza dedicata nella mappa nazionale e nei canali di comunicazione ufficiali: un modo concreto per rafforzare identità e credibilità.",
+        body: "Ogni sede è inserita nella rete ufficiale TOEFL Ambassador, con presenza dedicata nella mappa nazionale e nei canali di comunicazione ufficiali: un modo concreto per rafforzare identità e credibilità.",
       },
       {
         title: "Supporto e formazione dedicata",
@@ -103,7 +103,7 @@ export const centersContent = {
       },
     ],
     cta: {
-      label: "Scopri come diventare Partner",
+      label: "Scopri come diventare sede",
       href: "/centri#form",
     },
   },
@@ -111,7 +111,7 @@ export const centersContent = {
   locationsIntro: {
     title: "Elenco sedi",
     intro:
-      "TOEFL Ambassador è una rete di centri partner accreditati presenti su tutto il territorio nazionale. Ogni sede è selezionata secondo rigorosi standard ETS, per garantire qualità e supporto personalizzato.",
+      "TOEFL Ambassador è una rete di sedi accreditate presenti su tutto il territorio nazionale. Ogni sede è selezionata secondo rigorosi standard ETS, per garantire qualità e supporto personalizzato.",
     howToUse: [
       "Inserisci la tua città o il CAP nel campo di ricerca.",
       "Consulta la mappa interattiva per visualizzare le sedi disponibili nella tua area.",

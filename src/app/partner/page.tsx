@@ -13,8 +13,8 @@ export default function PartnerPage() {
   return (
     <div className="bg-gradient-to-b from-white via-slate-50 to-[#F0FF96]/30">
       <section className="mx-auto max-w-5xl px-4 py-16 sm:py-20">
-        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-600">Partner</p>
-        <h1 className="mt-4 text-4xl font-bold text-slate-900 sm:text-5xl">Programma TOEFL Ambassador per i partner</h1>
+        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-600">Sedi</p>
+        <h1 className="mt-4 text-4xl font-bold text-slate-900 sm:text-5xl">Programma TOEFL Ambassador per le sedi</h1>
         <p className="mt-4 max-w-3xl text-lg text-slate-700">
           Diventa punto di riferimento ufficiale ETS per il TOEFL iBT® nel tuo territorio. Offri ai tuoi studenti una certificazione riconosciuta a livello globale con strumenti, formazione e supporto dedicato.
         </p>

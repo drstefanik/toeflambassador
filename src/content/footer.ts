@@ -13,7 +13,7 @@ export const footerContent = {
   ],
 
   secondaryLinks: [
-    { label: "Diventa Partner TOEFL Ambassador", href: "/centri#form" },
+    { label: "Diventa sede TOEFL Ambassador", href: "/centri#form" },
     // da aggiornare quando avrai le pagine legali
     { label: "Informativa privacy", href: "/privacy" },
     { label: "Termini e condizioni", href: "/termini" },
@@ -28,5 +28,5 @@ export const footerContent = {
   },
 
   legalNote:
-    "TOEFL iBT® è un marchio registrato di ETS. TOEFL Ambassador opera come network di centri partner autorizzati, in conformità con gli standard ufficiali ETS.",
+    "TOEFL iBT® è un marchio registrato di ETS. TOEFL Ambassador opera come network di sedi autorizzate, in conformità con gli standard ufficiali ETS.",
 };
