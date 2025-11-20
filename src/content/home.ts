@@ -1,32 +1,38 @@
+// src/content/home.ts
+
 export const homeContent = {
   hero: {
-    title: "TOEFL Ambassador",
+    eyebrow: "Programma ufficiale ETS",
+    title: "TOEFL Ambassador: la rete ufficiale per il TOEFL iBT® in Italia",
     subtitle:
-      "Il programma che connette centri linguistici e studenti per percorsi TOEFL iBT® su misura.",
+      "Aiutiamo scuole, università, centri di formazione e consulenti a offrire il TOEFL iBT®, la certificazione linguistica più riconosciuta al mondo. Studenti e professionisti possono contare su supporto ufficiale, in italiano, in ogni fase del percorso.",
+
     centerCta: {
-      label: "Sono un Centro / Istituzione",
+      label: "Sono un centro / istituzione",
       href: "/centri",
     },
     studentCta: {
-      label: "Sono uno Studente",
+      label: "Sono uno studente",
       href: "/studenti",
     },
   },
+
   centersTeaser: {
-    title: "Per i centri",
+    title: "Diventa parte della rete TOEFL Ambassador",
     description:
-      "Scopri come accedere al network TOEFL Ambassador e offrire servizi esclusivi ai tuoi studenti.",
+      "Il programma TOEFL Ambassador è dedicato a scuole di lingua, università, centri di formazione e agenzie educative che vogliono diventare punto di riferimento ufficiale per il TOEFL iBT® sul proprio territorio.",
     cta: {
-      label: "Esplora il programma",
+      label: "Scopri il programma per i centri",
       href: "/centri",
     },
   },
+
   studentsTeaser: {
-    title: "Per gli studenti",
+    title: "TOEFL iBT®: la certificazione che apre le porte del mondo",
     description:
-      "Preparati al TOEFL iBT® con il supporto dei nostri Ambassador e acquista voucher dedicati.",
+      "Preparati, sostieni e ottieni il TOEFL iBT® con il supporto dei nostri consulenti. Ti aiutiamo a scegliere l’esame giusto, a registrarti correttamente e a utilizzare il punteggio per iscrizioni universitarie, visti e application internazionali.",
     cta: {
-      label: "Scopri di più",
+      label: "Scopri i servizi per gli studenti",
       href: "/studenti",
     },
   },
