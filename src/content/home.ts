@@ -3,17 +3,17 @@
 export const homeContent = {
   hero: {
     eyebrow: "Programma ufficiale ETS",
-    title: "TOEFL Ambassador: la rete ufficiale per il TOEFL iBT® in Italia",
+    title: "TOEFL Ambassador: il programma ufficiale per partner e studenti",
     subtitle:
-      "Aiutiamo scuole, università, centri di formazione e consulenti a offrire il TOEFL iBT®, la certificazione linguistica più riconosciuta al mondo. Studenti e professionisti possono contare su supporto ufficiale, in italiano, in ogni fase del percorso.",
+      "La rete ETS che supporta scuole, università, centri di formazione e studenti nel percorso TOEFL iBT®. Orientamento, registrazione e materiali ufficiali in un unico punto di riferimento.",
 
     centerCta: {
-      label: "Sono un centro / istituzione",
-      href: "/centri",
+      label: "Sono un partner / ente",
+      href: "/partner/chi-puo-aderire",
     },
     studentCta: {
       label: "Sono uno studente",
-      href: "/studenti",
+      href: "/student/esame-toefl",
     },
   },
 
@@ -23,7 +23,7 @@ export const homeContent = {
       "Il programma TOEFL Ambassador è dedicato a scuole di lingua, università, centri di formazione e agenzie educative che vogliono diventare punto di riferimento ufficiale per il TOEFL iBT® sul proprio territorio.",
     cta: {
       label: "Scopri il programma per i centri",
-      href: "/centri",
+      href: "/partner",
     },
   },
 
@@ -33,7 +33,7 @@ export const homeContent = {
       "Preparati, sostieni e ottieni il TOEFL iBT® con il supporto dei nostri consulenti. Ti aiutiamo a scegliere l’esame giusto, a registrarti correttamente e a utilizzare il punteggio per iscrizioni universitarie, visti e application internazionali.",
     cta: {
       label: "Scopri i servizi per gli studenti",
-      href: "/studenti",
+      href: "/student",
     },
   },
 };
