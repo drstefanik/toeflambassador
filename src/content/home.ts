@@ -8,7 +8,7 @@ export const homeContent = {
       "La rete ETS che supporta scuole, università, centri di formazione e studenti nel percorso TOEFL iBT®. Orientamento, registrazione e materiali ufficiali in un unico punto di riferimento.",
 
     centerCta: {
-      label: "Sono un partner / ente",
+      label: "Sono un ente",
       href: "/partner/chi-puo-aderire",
     },
     studentCta: {
