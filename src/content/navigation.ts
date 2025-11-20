@@ -1,7 +1,7 @@
 // src/content/navigation.ts
 
 export const navigationContent = {
-  tagline: "Programma ufficiale ETS per il TOEFL iBT® in Italia",
+  tagline: "Programma ufficiale ETS per il TOEFL iBT®",
   navItems: [
     { label: "Home", href: "/" },
     { label: "About us", href: "/about" },
