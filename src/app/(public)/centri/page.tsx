@@ -8,6 +8,7 @@ import { env } from "@/lib/config";
 export default function CentriPage() {
   return (
     <div className="bg-white">
+      {/* HERO */}
       <section className="mx-auto max-w-5xl px-4 py-16">
         <p className="text-sm font-semibold uppercase tracking-[0.3em] text-sky-600">
           Per i centri
@@ -31,22 +32,7 @@ export default function CentriPage() {
         </div>
       </section>
 
-      <section className="bg-slate-50 py-16">
-        <div className="mx-auto grid max-w-5xl gap-8 px-4 md:grid-cols-3">
-          {centriContent.sections.map((section) => (
-            <article
-              key={section.title}
-              className="rounded-3xl bg-white p-6 shadow-sm"
-            >
-              <h2 className="text-xl font-semibold text-slate-900">
-                {section.title}
-              </h2>
-              <p className="mt-2 text-slate-600">{section.body}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
+      {/* CALENDLY – FISSA APPUNTAMENTO */}
       <section className="mx-auto max-w-5xl px-4 py-16">
         <h2 className="text-2xl font-semibold text-slate-900">
           Fissa un appuntamento per maggiori informazioni
