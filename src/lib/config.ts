@@ -1,3 +1,5 @@
+import { randomBytes } from "crypto";
+
 const warnMissing = (key: string) => {
   if (process.env.NODE_ENV !== "production") {
     console.warn(`[config] Missing environment variable: ${key}`);
@@ -10,6 +12,23 @@ const getEnv = (key: string, options?: { required?: boolean }) => {
     warnMissing(key);
   }
   return value ?? "";
+};
+
+let cachedRuntimeJwtSecret: string | null = null;
+
+const getJwtSecret = () => {
+  const envSecret = getEnv("JWT_SECRET") || getEnv("NEXTAUTH_SECRET");
+  if (envSecret) {
+    return envSecret;
+  }
+
+  if (!cachedRuntimeJwtSecret) {
+    cachedRuntimeJwtSecret = randomBytes(32).toString("hex");
+    const suffix = process.env.NODE_ENV === "production" ? " (set JWT_SECRET for a persistent, secure secret)" : "";
+    console.warn(`[config] JWT_SECRET missing, using generated runtime secret${suffix}`);
+  }
+
+  return cachedRuntimeJwtSecret;
 };
 
 export const env = {
@@ -26,7 +45,7 @@ export const env = {
     "TOEFL_Ambassador_Activation_Pack_ID"
   ),
   STRIPE_WEBHOOK_SECRET: getEnv("STRIPE_WEBHOOK_SECRET"),
-  JWT_SECRET: getEnv("JWT_SECRET"),
+  JWT_SECRET: getJwtSecret(),
   EMAIL_API_KEY: getEnv("EMAIL_API_KEY"),
   EMAIL_FROM: getEnv("EMAIL_FROM"),
   NEXT_PUBLIC_CALENDLY_STUDENT_URL: getEnv("NEXT_PUBLIC_CALENDLY_STUDENT_URL"),
