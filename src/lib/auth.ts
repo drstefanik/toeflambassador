@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-import { env } from "./config";
+import { getJwtSecret } from "./config";
 
 export type StudentPayload = {
   role: "student";
@@ -32,16 +32,15 @@ export async function verifyPassword(plain: string, hash: string) {
 }
 
 export function signToken(payload: TokenPayload) {
-  if (!env.JWT_SECRET) {
-    throw new Error("Missing JWT_SECRET");
-  }
-  return jwt.sign(payload, env.JWT_SECRET, { expiresIn: "7d" });
+  const secret = getJwtSecret();
+  return jwt.sign(payload, secret, { expiresIn: "7d" });
 }
 
 export function verifyToken(token: string) {
-  if (!env.JWT_SECRET) return null;
+  const secret = getJwtSecret();
+  if (!secret) return null;
   try {
-    return jwt.verify(token, env.JWT_SECRET) as TokenPayload;
+    return jwt.verify(token, secret) as TokenPayload;
   } catch {
     return null;
   }
