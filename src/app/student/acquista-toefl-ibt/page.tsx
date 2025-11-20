@@ -18,9 +18,7 @@ export default function AcquistaToeflIbtPage() {
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <CtaButton href="https://www.ets.org/toefl/test-takers/ibt/register">Vai al portale ETS</CtaButton>
-          <CtaButton href="/student/prenota-consulenza" variant="secondary">
-            Chiedi supporto
-          </CtaButton>
+          <CtaButton href="mailto:support@toeflambassador.org" variant="secondary">Richiedi assistenza</CtaButton>
         </div>
 
         <div className="mt-10 grid gap-4 sm:grid-cols-2">

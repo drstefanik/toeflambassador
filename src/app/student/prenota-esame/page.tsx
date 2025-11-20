@@ -33,7 +33,7 @@ export default async function PrenotaEsamePage() {
         </p>
 
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-          <CtaButton href="/student/prenota-consulenza">Parla con un consulente</CtaButton>
+          <CtaButton href="/student/acquista-toefl-ibt">Acquista il tuo esame</CtaButton>
           <CtaButton href="mailto:support@toeflambassador.org" variant="secondary">
             Richiedi assistenza
           </CtaButton>

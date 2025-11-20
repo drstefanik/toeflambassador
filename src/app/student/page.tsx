@@ -4,7 +4,6 @@ import { CtaButton } from "@/components/cta-button";
 const studentLinks = [
   { title: "L’esame TOEFL", description: "Formato, durata e competenze valutate dal TOEFL iBT®.", href: "/student/esame-toefl" },
   { title: "Riconoscimenti", description: "Scopri dove è accettato il punteggio TOEFL in Italia e nel mondo.", href: "/student/riconoscimenti" },
-  { title: "Prenota la consulenza gratuita", description: "Parla con un TOEFL Ambassador e pianifica il tuo percorso.", href: "/student/prenota-consulenza" },
   { title: "Prenota il tuo esame", description: "Scegli un centro TOEFL Ambassador e conferma la data dell’esame.", href: "/student/prenota-esame" },
   { title: "Acquista il TOEFL iBT", description: "Completa l’acquisto attraverso il canale ufficiale ETS.", href: "/student/acquista-toefl-ibt" },
 ];
@@ -16,11 +15,11 @@ export default function StudentPage() {
         <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-600">Studenti</p>
         <h1 className="mt-4 text-4xl font-bold text-slate-900 sm:text-5xl">Servizi TOEFL Ambassador per gli studenti</h1>
         <p className="mt-4 max-w-3xl text-lg text-slate-700">
-          Preparazione, registrazione e utilizzo del punteggio TOEFL iBT® con supporto ufficiale ETS. Trova il centro più vicino o prenota una consulenza gratuita.
+          Preparazione, registrazione e utilizzo del punteggio TOEFL iBT® con supporto ufficiale ETS. Trova il centro più vicino e prenota il tuo esame.
         </p>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <CtaButton href="/student/prenota-consulenza">Prenota la consulenza</CtaButton>
+          <CtaButton href="/student/prenota-esame">Prenota il tuo esame</CtaButton>
           <CtaButton href="/student/esame-toefl" variant="secondary">
             Scopri l’esame
           </CtaButton>
