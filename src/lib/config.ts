@@ -16,7 +16,7 @@ const getEnv = (key: string, options?: { required?: boolean }) => {
 
 let cachedRuntimeJwtSecret: string | null = null;
 
-const getJwtSecret = () => {
+export const getJwtSecret = () => {
   const envSecret = getEnv("JWT_SECRET") || getEnv("NEXTAUTH_SECRET");
   if (envSecret) {
     return envSecret;
