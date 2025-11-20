@@ -29,7 +29,7 @@ export default async function StudentiPage() {
       {/* CALENDLY CONSULENZA */}
       <section className="mx-auto max-w-5xl px-4 py-16">
         <h2 className="text-2xl font-semibold text-slate-900">
-          {studentiContent.calendly.title}
+          Prenota la tua consulenza gratuita
         </h2>
         <p className="mt-2 text-slate-600">
           Fissa un appuntamento con un TOEFL Ambassador per pianificare il tuo
