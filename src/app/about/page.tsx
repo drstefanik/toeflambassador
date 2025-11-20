@@ -8,7 +8,7 @@ export default function AboutPage() {
     {
       title: "Missione",
       description:
-        "Diffondiamo l'accesso a una certificazione riconosciuta globalmente, accompagnando partner e studenti con materiali ufficiali, formazione e orientamento dedicato.",
+        "Diffondiamo l'accesso a una certificazione riconosciuta globalmente, accompagnando sedi e studenti con materiali ufficiali, formazione e orientamento dedicato.",
     },
     {
       title: "Collaborazione trasparente",
@@ -30,7 +30,7 @@ export default function AboutPage() {
           TOEFL Ambassador è il programma ufficiale ETS in Italia per portare il TOEFL iBT® più vicino a istituzioni, docenti e studenti. Collaboriamo direttamente con ETS per garantire informazioni aggiornate, procedure chiare e un ecosistema di supporto affidabile.
         </p>
         <p className="mt-3 max-w-3xl text-lg text-slate-700">
-          Lavoriamo con scuole di lingua, università, centri di formazione e consulenti educativi per diffondere buone pratiche di preparazione, gestire eventi informativi e facilitare l’accesso all’esame attraverso partner certificati.
+          Lavoriamo con scuole di lingua, università, centri di formazione e consulenti educativi per diffondere buone pratiche di preparazione, gestire eventi informativi e facilitare l’accesso all’esame attraverso sedi certificate.
         </p>
 
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

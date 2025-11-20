@@ -11,7 +11,7 @@ export default function AppuntamentoPage() {
     <div className="bg-gradient-to-b from-white via-slate-50 to-[#F0FF96]/30">
       <section className="mx-auto max-w-5xl px-4 py-16 sm:py-20">
         <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-600">
-          Partner
+          Sedi
         </p>
         <h1 className="mt-4 text-4xl font-bold text-slate-900 sm:text-5xl">
           Fissa un appuntamento
@@ -66,7 +66,7 @@ export default function AppuntamentoPage() {
                   minHeight: "850px",
                   border: "none",
                 }}
-                title="Calendly Partner"
+                title="Calendly Sedi"
                 loading="lazy"
                 onLoad={() => setIsCalendlyLoading(false)}
               ></iframe>

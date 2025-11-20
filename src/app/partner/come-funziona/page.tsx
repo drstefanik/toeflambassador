@@ -25,10 +25,10 @@ export default function ComeFunzionaPage() {
   return (
     <div className="bg-gradient-to-b from-white via-slate-50 to-[#F0FF96]/30">
       <section className="mx-auto max-w-5xl px-4 py-16 sm:py-20">
-        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-600">Partner</p>
+        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-600">Sedi</p>
         <h1 className="mt-4 text-4xl font-bold text-slate-900 sm:text-5xl">Come funziona il programma</h1>
         <p className="mt-4 max-w-3xl text-lg text-slate-700">
-          Un percorso guidato per diventare TOEFL Ambassador: dal primo contatto all’operatività con il supporto del team ETS.
+          Un percorso guidato per diventare sede TOEFL Ambassador: dal primo contatto all’operatività con il supporto del team ETS.
         </p>
 
         <div className="mt-10 space-y-4">

@@ -6,7 +6,7 @@ export const navigationContent = {
     { label: "About us", href: "/about" },
     { label: "Elenco sedi", href: "/partner/sedi" },
     {
-      label: "Partner",
+      label: "Sedi",
       href: "/partner",
       children: [
         { label: "Chi può aderire", href: "/partner/chi-puo-aderire" },
