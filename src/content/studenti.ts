@@ -16,6 +16,21 @@ export const studentsContent = {
     },
   },
 
+  voucher: {
+    title: "Acquista il tuo voucher TOEFL iBT®",
+    loggedInLabel: "Paga con Stripe e ricevi subito il tuo voucher",
+    loggedOutCtas: [
+      {
+        label: "Accedi per acquistare il voucher",
+        href: "/login-student",
+      },
+      {
+        label: "Registrati come studente",
+        href: "/signup-student",
+      },
+    ],
+  },
+
   examOverview: {
     title: "Cos’è il TOEFL iBT®",
     intro:
