@@ -20,12 +20,25 @@ interface PageProps {
 }
 
 export default async function CenterPublicPage({ params }: PageProps) {
-  const { slug } = params;
   let center = null;
+  let hasError = false;
   try {
-    center = await getCenterBySlug(slug);
+    center = await getCenterBySlug(params.slug);
   } catch (error) {
-    console.error(`Impossibile caricare il centro ${slug}`, error);
+    console.error(`Impossibile caricare il centro ${params.slug}`, error);
+    hasError = true;
+  }
+
+  if (hasError) {
+    return (
+      <div className="bg-gradient-to-b from-white via-slate-50 to-[#F0FF96]/30">
+        <section className="mx-auto max-w-4xl px-4 py-16 sm:py-20">
+          <div className="rounded-3xl border border-amber-200 bg-amber-50 p-6 text-amber-900">
+            Centro non disponibile, riprova
+          </div>
+        </section>
+      </div>
+    );
   }
 
   if (!center) {

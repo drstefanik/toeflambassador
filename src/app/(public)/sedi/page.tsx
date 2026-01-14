@@ -3,6 +3,7 @@ export const revalidate = 0;
 
 import { CentersDirectoryClient } from "@/components/centers-directory-client";
 import { getActiveCenters } from "@/lib/repositories/centers";
+import { resolveCenterSlug } from "@/lib/centers";
 
 export default async function SediPage() {
   let centers = [] as Awaited<ReturnType<typeof getActiveCenters>>;
@@ -15,7 +16,8 @@ export default async function SediPage() {
     id: center.id,
     name: center.name,
     city: center.city,
-    slug: center.slug,
+    slug: resolveCenterSlug(center.fields),
+    fields: center.fields,
     address: center.fields.Address,
     latitude: center.fields.Latitude,
     longitude: center.fields.Longitude,

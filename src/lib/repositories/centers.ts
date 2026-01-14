@@ -7,6 +7,7 @@ import {
   getCenterBySlug as fetchCenterBySlug,
   updateCenterFields as updateCenterRecord,
 } from "../airtable";
+import { resolveCenterSlug } from "../centers";
 
 export interface CenterEntity {
   id: string;
@@ -20,7 +21,7 @@ const mapCenter = (record: AirtableRecord<CenterFields>): CenterEntity => ({
   id: record.id,
   name: record.fields.Name ?? "",
   city: record.fields.City ?? record.fields["Città"],
-  slug: record.fields.Slug,
+  slug: resolveCenterSlug(record.fields),
   fields: record.fields,
 });
 

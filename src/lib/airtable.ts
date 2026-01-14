@@ -1,4 +1,6 @@
 import { env } from "./config";
+import { resolveCenterSlug } from "./centers";
+import { slugify } from "./slugify";
 
 type Method = "GET" | "POST" | "PATCH";
 
@@ -131,12 +133,16 @@ export interface OrderFields {
   Currency?: string;
 }
 
-export async function getAllCenters() {
+export async function getCenters() {
   const data = await airtableRequest<AirtableListResponse<CenterFields>>(
     tables.centers,
     "GET"
   );
   return data.records;
+}
+
+export async function getAllCenters() {
+  return getCenters();
 }
 
 export async function getActiveCenters() {
@@ -150,43 +156,33 @@ export async function getActiveCenters() {
 }
 
 export async function getCenterBySlug(slug: string) {
-  const slugValue = escapeFormulaValue(slug.toLowerCase());
-  const data = await airtableRequest<AirtableListResponse<CenterFields>>(
-    tables.centers,
-    "GET",
-    undefined,
-    {
-      filterByFormula: `{Slug}='${slugValue}'`,
-      maxRecords: 1,
-    }
-  );
-  if (data.records[0]) {
-    return data.records[0];
-  }
-
-  const fetchByCityField = (fieldName: "City" | "Città") =>
-    airtableRequest<AirtableListResponse<CenterFields>>(
-      tables.centers,
-      "GET",
-      undefined,
-      {
-        filterByFormula: `LOWER({${fieldName}})='${slugValue}'`,
-        maxRecords: 1,
-      }
-    );
+  const normalized = slugify(decodeURIComponent(slug || ""));
+  let centers: AirtableRecord<CenterFields>[] = [];
 
   try {
-    const fallback = await fetchByCityField("City");
-    if (fallback.records[0]) {
-      return fallback.records[0];
-    }
+    centers = await getCenters();
   } catch (error) {
-    const fallback = await fetchByCityField("Città");
-    return fallback.records[0] ?? null;
+    console.error("Airtable getCenters failed", error);
+    throw error;
   }
 
-  const fallback = await fetchByCityField("Città");
-  return fallback.records[0] ?? null;
+  const sampleSlugs = centers
+    .map((center) => resolveCenterSlug(center.fields ?? center))
+    .slice(0, 3);
+  console.log("getCenterBySlug", {
+    slug: normalized,
+    centers: centers.length,
+    sampleSlugs,
+  });
+
+  const found = centers.find((center) => {
+    const centerSlug = slugify(
+      center.fields?.Slug ?? center.fields?.City ?? center.fields?.Name ?? ""
+    );
+    return centerSlug === normalized;
+  });
+
+  return found ?? null;
 }
 
 export async function getCenterById(centerId: string) {

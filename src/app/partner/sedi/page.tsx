@@ -1,6 +1,6 @@
 import { CentersDirectoryShell } from "@/components/centers-directory-shell";
 import { getActiveCenters } from "@/lib/repositories/centers";
-import { slugify } from "@/lib/slugify";
+import { resolveCenterSlug } from "@/lib/centers";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -14,15 +14,14 @@ export default async function PartnerSediPage() {
   }
 
   const points = centers.map((center) => {
-    const fallbackSlugSource =
-      center.city ?? center.fields.City ?? center.fields["Città"] ?? center.fields.Name ?? "";
-    const resolvedSlug = center.slug ?? (fallbackSlugSource ? slugify(fallbackSlugSource) : null);
+    const resolvedSlug = resolveCenterSlug(center.fields);
 
     return ({
       id: center.id,
       name: center.name,
       city: center.city,
       slug: resolvedSlug,
+      fields: center.fields,
       address: center.fields.Address,
       latitude: center.fields.Latitude,
       longitude: center.fields.Longitude,
