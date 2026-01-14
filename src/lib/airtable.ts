@@ -1,5 +1,4 @@
 import { env } from "./config";
-import { resolveCenterSlug } from "./centers";
 import { normalizeCenter } from "./normalize-center";
 import { slugify } from "./slugify";
 
@@ -157,13 +156,44 @@ export async function getActiveCenters() {
 }
 
 export async function getCenterBySlug(slug: string) {
-  const centers = await getCenters();
-  const normalizedSlug = slugify(decodeURIComponent(slug));
+  const normalized = slugify(decodeURIComponent(slug ?? "")).trim();
 
-  const found = centers.find(
-    (record) => resolveCenterSlug(record.fields ?? record) === normalizedSlug
-  );
-  return found ? normalizeCenter(found) : null;
+  // Airtable formula strings use double quotes; escape any that might appear (defensive).
+  const esc = (s: string) => s.replace(/"/g, '\"');
+
+  try {
+    // 1) Lookup by stored Slug (preferred)
+    const bySlug = await airtableRequest<AirtableListResponse<CenterFields>>(
+      tables.centers,
+      "GET",
+      undefined,
+      { maxRecords: 1, filterByFormula: `{Slug} = "${esc(normalized)}"` }
+    );
+    if (bySlug.records?.length) return normalizeCenter(bySlug.records[0]);
+
+    // 2) Fallback: match by City
+    const byCity = await airtableRequest<AirtableListResponse<CenterFields>>(
+      tables.centers,
+      "GET",
+      undefined,
+      { maxRecords: 1, filterByFormula: `LOWER({City}) = "${esc(normalized)}"` }
+    );
+    if (byCity.records?.length) return normalizeCenter(byCity.records[0]);
+
+    // 3) Fallback: match by Città (legacy/IT column)
+    const byCitta = await airtableRequest<AirtableListResponse<CenterFields>>(
+      tables.centers,
+      "GET",
+      undefined,
+      { maxRecords: 1, filterByFormula: `LOWER({Città}) = "${esc(normalized)}"` }
+    );
+    if (byCitta.records?.length) return normalizeCenter(byCitta.records[0]);
+
+    return null;
+  } catch (e) {
+    console.error("[getCenterBySlug] Airtable error:", e);
+    throw e;
+  }
 }
 
 export async function getCenterById(centerId: string) {
