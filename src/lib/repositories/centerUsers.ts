@@ -23,27 +23,17 @@ export async function findCenterUserByEmail(email: string) {
   return record ? mapCenterUser(record) : null;
 }
 
-export async function createCenterUserWithOTP(input: {
+export async function createCenterUserRecord(input: {
   email: string;
   passwordHash?: string;
   centerId?: string;
-  otp?: string;
 }) {
   const record = await createCenterUser({
     Email: input.email,
     PasswordHash: input.passwordHash,
     Center: input.centerId ? [input.centerId] : undefined,
-    OTP: input.otp,
-    OTPUsed: false,
   });
 
-  return mapCenterUser(record);
-}
-
-export async function markOTPUsed(centerUserId: string) {
-  const record = await updateCenterUser(centerUserId, {
-    OTPUsed: true,
-  });
   return mapCenterUser(record);
 }
 
