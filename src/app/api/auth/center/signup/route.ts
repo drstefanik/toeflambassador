@@ -5,8 +5,7 @@ import { getCenterById } from "@/lib/repositories/centers";
 import {
   createCenterUserRecord,
   findCenterUserByEmail,
-  linkCenterUserToCenter,
-  updateCenterUserPassword,
+  updateCenterUserRecord,
 } from "@/lib/repositories/centerUsers";
 import { findActiveCenterOtpByCode, markCenterOtpUsed } from "@/lib/repositories/centerOtps";
 
@@ -39,7 +38,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const center = await getCenterById(centerIds[0]);
+    const otpCenterId = centerIds[0];
+    const center = await getCenterById(otpCenterId);
     if (!center.slug || center.slug !== centerSlug) {
       return NextResponse.json(
         { error: "OTP non valido per questo centro" },
@@ -50,16 +50,28 @@ export async function POST(request: NextRequest) {
     let centerUser = await findCenterUserByEmail(email);
     const passwordHash = await hashPassword(password);
     if (!centerUser) {
-      centerUser = await createCenterUserRecord({
-        email,
-        centerId: center.id,
-        passwordHash,
-      });
+      const fields = {
+        Email: email,
+        PasswordHash: passwordHash,
+        Center: [otpCenterId],
+      };
+      console.log("CenterUsers fields:", Object.keys(fields));
+      centerUser = await createCenterUserRecord(fields);
     } else {
-      await updateCenterUserPassword(centerUser.id, passwordHash);
-      await linkCenterUserToCenter(centerUser.id, center.id);
+      const fields = {
+        PasswordHash: passwordHash,
+        Center: [otpCenterId],
+      };
+      console.log("CenterUsers fields:", Object.keys(fields));
+      centerUser = await updateCenterUserRecord(centerUser.id, fields);
     }
-    await markCenterOtpUsed(centerOtp.id, now);
+
+    const updateFields: { Status: string; UsedAt?: string } = { Status: "used" };
+    if ("UsedAt" in centerOtp.fields) {
+      updateFields.UsedAt = now.toISOString();
+    }
+    console.log("Center_OTPs update fields:", Object.keys(updateFields));
+    await markCenterOtpUsed(centerOtp.id, updateFields);
 
     const token = signToken({
       role: "center",

@@ -20,10 +20,10 @@ export async function findActiveCenterOtpByCode(otp: string) {
   return record ? mapCenterOtp(record) : null;
 }
 
-export async function markCenterOtpUsed(centerOtpId: string, usedAt: Date) {
-  const record = await updateCenterOTP(centerOtpId, {
-    Status: "used",
-    UsedAt: usedAt.toISOString(),
-  });
+export async function markCenterOtpUsed(
+  centerOtpId: string,
+  fields: Partial<CenterOTPFields>
+) {
+  const record = await updateCenterOTP(centerOtpId, fields);
   return mapCenterOtp(record);
 }
