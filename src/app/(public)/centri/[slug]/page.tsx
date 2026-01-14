@@ -3,6 +3,7 @@ import { getCenterBySlug } from "@/lib/airtable";
 import { getAllCentersForStaticPaths } from "@/lib/repositories/centers";
 
 export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export async function generateStaticParams() {
   try {
@@ -17,7 +18,26 @@ export async function generateStaticParams() {
 }
 
 export default async function CenterPage({ params }: { params: { slug: string } }) {
-  const center = await getCenterBySlug(params.slug);
+  let center: any = null;
+
+  try {
+    center = await getCenterBySlug(params.slug);
+  } catch (e) {
+    return (
+      <main className="max-w-5xl mx-auto px-4 py-10">
+        <a href="/partner/sedi" className="text-sm hover:underline">
+          ← Torna all’elenco sedi
+        </a>
+        <div className="mt-6 rounded-2xl border bg-white/70 p-8 shadow-sm">
+          <h1 className="text-2xl font-semibold">Errore temporaneo</h1>
+          <p className="mt-2 opacity-80">
+            Non è stato possibile caricare i dati del centro in questo momento. Riprova tra poco.
+          </p>
+        </div>
+      </main>
+    );
+  }
+
   if (!center) return notFound();
 
   const mapsUrl =
