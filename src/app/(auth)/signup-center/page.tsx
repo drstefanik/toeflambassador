@@ -13,7 +13,7 @@ export default async function SignupCenterPage() {
   }
   return (
     <div className="mx-auto max-w-3xl px-4 py-16">
-      <h1 className="text-4xl font-bold text-slate-900">Attiva il tuo centro</h1>
+      <h1 className="text-4xl font-bold text-slate-900">Registra il tuo centro</h1>
       <p className="mt-2 text-slate-600">
         Inserisci l&rsquo;OTP ricevuto dal team ETS per collegare il tuo account al centro.
       </p>
