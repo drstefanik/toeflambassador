@@ -17,7 +17,7 @@ export default function ChiPuoAderirePage() {
           Chi può diventare sede TOEFL Ambassador
         </h1>
         <p className="mt-4 max-w-3xl text-lg text-slate-700">
-          Il programma è aperto a organizzazioni che desiderano promuovere o offrire il TOEFL iBT® in modo ufficiale. La rete di sedi copre diversi contesti formativi e professionali.
+          Il programma è aperto a organizzazioni che desiderano promuovere o offrire il TOEFL iBT® in modo ufficiale. Entrare nella rete significa diventare un punto di riferimento ufficiale d'eccellenza per la certificazione TOEFL in Italia.
         </p>
 
         <div className="mt-10 grid gap-4 sm:grid-cols-2">
