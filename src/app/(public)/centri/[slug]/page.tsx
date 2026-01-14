@@ -20,12 +20,11 @@ interface PageProps {
 }
 
 export default async function CenterPublicPage({ params }: PageProps) {
-  const { slug } = params;
   let center = null;
   try {
-    center = await getCenterBySlug(slug);
+    center = await getCenterBySlug(params.slug);
   } catch (error) {
-    console.error(`Impossibile caricare il centro ${slug}`, error);
+    console.error(`Impossibile caricare il centro ${params.slug}`, error);
   }
 
   if (!center) {

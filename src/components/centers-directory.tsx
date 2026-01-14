@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { useMemo, useRef } from "react";
 import { CenterPoint, CentersMap } from "./centers-map";
+import { resolveCenterSlug } from "@/lib/centers";
 
 interface CenterCard extends CenterPoint {
   address?: string | null;
-  slug?: string | null;
 }
 
 interface Props {
@@ -21,6 +21,7 @@ export function CentersDirectory({ centers }: Props) {
     name: center.name,
     city: center.city,
     slug: center.slug,
+    fields: center.fields,
     latitude: center.latitude,
     longitude: center.longitude,
   })), [centers]);
@@ -38,31 +39,35 @@ export function CentersDirectory({ centers }: Props) {
     <div className="space-y-8">
       <CentersMap centers={points} onSelect={handleSelect} />
       <div className="grid gap-6 md:grid-cols-2">
-        {centers.map((center) => (
-          <div
-            key={center.id}
-            ref={(element) => {
-              cardRefs.current[center.id] = element;
-            }}
-            className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
-          >
-            <p className="text-sm font-semibold text-sky-600">
-              {center.city ?? "Località"}
-            </p>
-            <h3 className="mt-1 text-2xl font-semibold text-slate-900">
-              {center.name}
-            </h3>
-            {center.address && <p className="mt-2 text-slate-600">{center.address}</p>}
-            {center.slug && (
-              <Link
-                href={`/centri/${center.slug}`}
-                className="mt-4 inline-flex items-center text-sm font-semibold text-sky-700"
-              >
-                Vai alla pagina del centro →
-              </Link>
-            )}
-          </div>
-        ))}
+        {centers.map((center) => {
+          const slug = resolveCenterSlug(center.fields ?? center);
+
+          return (
+            <div
+              key={center.id}
+              ref={(element) => {
+                cardRefs.current[center.id] = element;
+              }}
+              className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
+            >
+              <p className="text-sm font-semibold text-sky-600">
+                {center.city ?? "Località"}
+              </p>
+              <h3 className="mt-1 text-2xl font-semibold text-slate-900">
+                {center.name}
+              </h3>
+              {center.address && <p className="mt-2 text-slate-600">{center.address}</p>}
+              {slug ? (
+                <Link
+                  href={`/centri/${slug}`}
+                  className="mt-4 inline-flex items-center text-sm font-semibold text-sky-700"
+                >
+                  Vai alla pagina del centro →
+                </Link>
+              ) : null}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

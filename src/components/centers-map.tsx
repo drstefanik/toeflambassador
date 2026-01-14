@@ -5,12 +5,14 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import L from "leaflet";
+import { resolveCenterSlug } from "@/lib/centers";
 
 export interface CenterPoint {
   id: string;
   name: string;
   city?: string | null;
   slug?: string | null;
+  fields?: any;
   latitude?: number | null;
   longitude?: number | null;
 }
@@ -55,8 +57,14 @@ export function CentersMap({ centers, onSelect }: Props) {
     >
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       <AutoFit centers={centers} />
-      {centers.map((center) =>
-        center.latitude && center.longitude ? (
+      {centers.map((center) => {
+        if (!center.latitude || !center.longitude) {
+          return null;
+        }
+
+        const slug = resolveCenterSlug(center.fields ?? center);
+
+        return (
           <Marker
             key={center.id}
             position={[center.latitude, center.longitude]}
@@ -69,9 +77,9 @@ export function CentersMap({ centers, onSelect }: Props) {
               <div className="text-sm">
                 <p className="font-semibold">{center.name}</p>
                 {center.city && <p>{center.city}</p>}
-                {center.slug && (
+                {slug && (
                   <Link
-                    href={`/centri/${center.slug}`}
+                    href={`/centri/${slug}`}
                     className="mt-2 inline-flex text-xs font-semibold text-sky-700"
                   >
                     Vai alla pagina del centro →
@@ -80,8 +88,8 @@ export function CentersMap({ centers, onSelect }: Props) {
               </div>
             </Popup>
           </Marker>
-        ) : null
-      )}
+        );
+      })}
     </MapContainer>
   );
 }
