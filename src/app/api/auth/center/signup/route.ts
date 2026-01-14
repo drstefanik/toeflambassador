@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const centerValue = center.slug ?? centerSlug;
+    const centerValue = centerSlug;
     console.log("typeof Center", typeof centerValue, centerValue);
     if (typeof centerValue !== "string") {
       return NextResponse.json({ error: "Centro non valido" }, { status: 400 });
@@ -59,14 +59,14 @@ export async function POST(request: NextRequest) {
       const fields = {
         Email: email,
         PasswordHash: passwordHash,
-        Center: centerValue,
+        Center: centerSlug,
       };
       console.log("CenterUsers fields:", Object.keys(fields));
       centerUser = await createCenterUserRecord(fields);
     } else {
       const fields = {
         PasswordHash: passwordHash,
-        Center: centerValue,
+        Center: centerSlug,
       };
       console.log("CenterUsers fields:", Object.keys(fields));
       centerUser = await updateCenterUserRecord(centerUser.id, fields);

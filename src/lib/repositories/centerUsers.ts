@@ -23,7 +23,11 @@ export async function findCenterUserByEmail(email: string) {
   return record ? mapCenterUser(record) : null;
 }
 
-export async function createCenterUserRecord(fields: CenterUserFields) {
+export async function createCenterUserRecord(fields: {
+  Email: string;
+  PasswordHash: string;
+  Center: string;
+}) {
   const record = await createCenterUser(fields);
 
   return mapCenterUser(record);
@@ -34,8 +38,8 @@ export async function updateCenterUserPassword(centerUserId: string, passwordHas
   return mapCenterUser(record);
 }
 
-export async function linkCenterUserToCenter(centerUserId: string, centerId: string) {
-  const record = await updateCenterUser(centerUserId, { Center: [centerId] });
+export async function linkCenterUserToCenter(centerUserId: string, centerValue: string) {
+  const record = await updateCenterUser(centerUserId, { Center: centerValue });
   return mapCenterUser(record);
 }
 
