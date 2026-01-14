@@ -1,5 +1,6 @@
 import { env } from "./config";
 import { resolveCenterSlug } from "./centers";
+import { normalizeCenter } from "./normalize-center";
 import { slugify } from "./slugify";
 
 type Method = "GET" | "POST" | "PATCH";
@@ -156,15 +157,13 @@ export async function getActiveCenters() {
 }
 
 export async function getCenterBySlug(slug: string) {
-  const normalized = slugify(decodeURIComponent(slug || ""));
-
   const centers = await getCenters();
-  const found = centers.find((center) => {
-    const centerSlug = resolveCenterSlug(center.fields ?? center);
-    return centerSlug === normalized;
-  });
+  const normalizedSlug = slugify(decodeURIComponent(slug));
 
-  return found ?? null;
+  const found = centers.find(
+    (record) => resolveCenterSlug(record.fields ?? record) === normalizedSlug
+  );
+  return found ? normalizeCenter(found) : null;
 }
 
 export async function getCenterById(centerId: string) {

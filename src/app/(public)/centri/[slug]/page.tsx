@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
-import { getAllCentersForStaticPaths, getCenterBySlug } from "@/lib/repositories/centers";
+import { getCenterBySlug } from "@/lib/airtable";
+import { getAllCentersForStaticPaths } from "@/lib/repositories/centers";
 
 export const revalidate = 60;
 
@@ -15,78 +16,57 @@ export async function generateStaticParams() {
   }
 }
 
-interface PageProps {
-  params: { slug: string };
-}
+export default async function CenterPage({ params }: { params: { slug: string } }) {
+  const center = await getCenterBySlug(params.slug);
+  if (!center) return notFound();
 
-export default async function CenterPublicPage({ params }: PageProps) {
-  let center = null;
-  try {
-    center = await getCenterBySlug(params.slug);
-  } catch (error) {
-    console.error(`Impossibile caricare il centro ${params.slug}`, error);
-  }
-
-  if (!center) {
-    notFound();
-  }
-
-  const { fields } = center;
-  const email = fields.AdminEmail ?? fields.ContactFormEmail;
-  const phone = fields.CallSectionPhoneNumber;
-  const mapUrl =
-    fields.Latitude && fields.Longitude
-      ? `https://www.google.com/maps?q=${fields.Latitude},${fields.Longitude}`
-      : fields.Address
-        ? `https://www.google.com/maps?q=${encodeURIComponent(fields.Address)}`
-        : null;
+  const mapsUrl =
+    center.latitude && center.longitude
+      ? `https://www.google.com/maps?q=${center.latitude},${center.longitude}`
+      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+          `${center.address}, ${center.city}`
+        )}`;
 
   return (
-    <div className="bg-gradient-to-b from-white via-slate-50 to-[#F0FF96]/30">
-      <section className="mx-auto max-w-4xl px-4 py-16 sm:py-20">
-        <a href="/partner/sedi" className="text-sm font-semibold text-sky-700">
-          ← Torna all’elenco sedi
-        </a>
-        <h1 className="mt-6 text-4xl font-bold text-slate-900">{center.name}</h1>
-        {(fields.City ?? fields["Città"]) && (
-          <p className="mt-2 text-lg font-semibold text-slate-600">
-            {fields.City ?? fields["Città"]}
-          </p>
-        )}
+    <main className="max-w-5xl mx-auto px-4 py-10">
+      <a href="/partner/sedi" className="text-sm hover:underline">
+        ← Torna all’elenco sedi
+      </a>
 
-        <div className="mt-8 space-y-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          {fields.Address && (
+      <div className="mt-6 rounded-2xl border bg-white/70 p-8 shadow-sm">
+        <div className="text-sm opacity-70">{center.city}</div>
+        <h1 className="text-3xl font-semibold mt-1">{center.name}</h1>
+
+        <div className="mt-4">
+          <div className="font-medium">Indirizzo</div>
+          <div>{center.address}</div>
+        </div>
+
+        <div className="mt-4 grid gap-2">
+          {center.email && (
             <div>
-              <p className="text-sm font-semibold text-slate-500">Indirizzo</p>
-              <p className="text-slate-800">{fields.Address}</p>
+              <span className="font-medium">Email:</span>{" "}
+              <a className="underline" href={`mailto:${center.email}`}>
+                {center.email}
+              </a>
             </div>
           )}
-
-          {(email || phone) && (
+          {center.phone && (
             <div>
-              <p className="text-sm font-semibold text-slate-500">Contatti</p>
-              <ul className="mt-2 space-y-1 text-slate-800">
-                {email && <li>Email: {email}</li>}
-                {phone && <li>Telefono: {phone}</li>}
-              </ul>
-            </div>
-          )}
-
-          {mapUrl && (
-            <div>
-              <p className="text-sm font-semibold text-slate-500">Mappa</p>
-              <a
-                href={mapUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="text-sky-700 underline"
-              >
-                Apri su Google Maps
+              <span className="font-medium">Telefono:</span>{" "}
+              <a className="underline" href={`tel:${center.phone}`}>
+                {center.phone}
               </a>
             </div>
           )}
         </div>
-      </section>
-    </div>
+
+        <div className="mt-6">
+          <a className="underline" href={mapsUrl} target="_blank" rel="noreferrer">
+            Apri su Google Maps →
+          </a>
+        </div>
+      </div>
+    </main>
   );
 }
