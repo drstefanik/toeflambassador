@@ -3,7 +3,6 @@ const audience = [
   "Università e dipartimenti che offrono corsi di inglese accademico",
   "Centri linguistici di atenei e istituti superiori",
   "Agenzie educative e consulenti per study abroad",
-  "Aziende che investono su certificazioni linguistiche per i team",
 ];
 
 export default function ChiPuoAderirePage() {
