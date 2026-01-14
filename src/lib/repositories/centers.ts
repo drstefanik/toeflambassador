@@ -4,10 +4,10 @@ import {
   getActiveCenters as fetchActiveCenters,
   getAllCenters,
   getCenterById as fetchCenterById,
-  getCenterBySlug as fetchCenterBySlug,
   updateCenterFields as updateCenterRecord,
 } from "../airtable";
 import { resolveCenterSlug } from "../centers";
+import { slugify } from "../slugify";
 
 export interface CenterEntity {
   id: string;
@@ -36,7 +36,11 @@ export async function getAllCentersForStaticPaths() {
 }
 
 export async function getCenterBySlug(slug: string) {
-  const record = await fetchCenterBySlug(slug);
+  const records = await getAllCenters();
+  const normalizedSlug = slugify(decodeURIComponent(slug));
+  const record = records.find(
+    (center) => resolveCenterSlug(center.fields ?? center) === normalizedSlug
+  );
   return record ? mapCenter(record) : null;
 }
 
