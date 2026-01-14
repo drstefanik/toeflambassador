@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CheckoutButton } from "@/components/checkout-button";
+import { LogoutButton } from "@/components/logout-button";
 import { getUserFromRequest } from "@/lib/auth";
 import { getCenterById } from "@/lib/repositories/centers";
 import { redirect } from "next/navigation";
@@ -14,11 +15,16 @@ export default async function CenterDashboardPage() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-16">
-      <p className="text-sm font-semibold uppercase tracking-[0.3em] text-sky-600">
-        Center Dashboard
-      </p>
-      <h1 className="mt-4 text-4xl font-bold text-slate-900">{center.name}</h1>
-      {center.city && <p className="text-slate-600">{center.city}</p>}
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-sky-600">
+            Center Dashboard
+          </p>
+          <h1 className="mt-4 text-4xl font-bold text-slate-900">{center.name}</h1>
+          {center.city && <p className="text-slate-600">{center.city}</p>}
+        </div>
+        <LogoutButton className="rounded-full border border-slate-200 px-5 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-60" />
+      </div>
 
       <div className="mt-10 grid gap-8 md:grid-cols-2">
         <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">

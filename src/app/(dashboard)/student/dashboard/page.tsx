@@ -1,4 +1,5 @@
 import { CheckoutButton } from "@/components/checkout-button";
+import { LogoutButton } from "@/components/logout-button";
 import { env } from "@/lib/config";
 import { getUserFromRequest } from "@/lib/auth";
 import { fetchStudentById } from "@/lib/repositories/students";
@@ -14,12 +15,17 @@ export default async function StudentDashboardPage() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-16">
-      <p className="text-sm font-semibold uppercase tracking-[0.3em] text-violet-600">
-        Student Dashboard
-      </p>
-      <h1 className="mt-4 text-4xl font-bold text-slate-900">
-        Benvenuto, {student.fullName ?? student.email}
-      </h1>
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-violet-600">
+            Student Dashboard
+          </p>
+          <h1 className="mt-4 text-4xl font-bold text-slate-900">
+            Benvenuto, {student.fullName ?? student.email}
+          </h1>
+        </div>
+        <LogoutButton className="rounded-full border border-slate-200 px-5 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-60" />
+      </div>
       <div className="mt-10 grid gap-8 md:grid-cols-2">
         <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
           <h2 className="text-2xl font-semibold text-slate-900">Prenota una consulenza</h2>
