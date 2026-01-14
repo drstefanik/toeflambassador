@@ -20,7 +20,9 @@ export interface CenterEntity {
 const mapCenter = (record: AirtableRecord<CenterFields>): CenterEntity => ({
   id: record.id,
   name: record.fields.Name ?? "",
-  city: record.fields.City ?? record.fields["Città"],
+  // ✅ la base usa "City" (non "Città")
+  city: record.fields.City ?? "",
+  // slug unico e coerente
   slug: resolveCenterSlug(record.fields),
   fields: record.fields,
 });
@@ -37,10 +39,16 @@ export async function getAllCentersForStaticPaths() {
 
 export async function getCenterBySlug(slug: string) {
   const records = await getAllCenters();
-  const normalizedSlug = slugify(decodeURIComponent(slug));
-  const record = records.find(
-    (center) => resolveCenterSlug(center.fields ?? center) === normalizedSlug
-  );
+
+  // normalizza come path
+  const normalizedSlug = slugify(decodeURIComponent(slug ?? ""));
+
+  const record = records.find((center) => {
+    // center è AirtableRecord, quindi center.fields esiste
+    const candidate = resolveCenterSlug(center.fields);
+    return candidate === normalizedSlug;
+  });
+
   return record ? mapCenter(record) : null;
 }
 
