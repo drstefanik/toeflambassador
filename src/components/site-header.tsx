@@ -6,11 +6,21 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { navigationContent } from "@/content/navigation";
 
+type UserRole = "student" | "center" | null;
+
+const AUTH_LINKS = new Set([
+  "/login-center",
+  "/login-student",
+  "/signup-center",
+  "/signup-student",
+]);
+
 export function SiteHeader() {
   const pathname = usePathname();
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState<Record<string, boolean>>({});
+  const [userRole, setUserRole] = useState<UserRole>(null);
   const navRef = useRef<HTMLDivElement>(null);
 
   const handleNavigate = () => {
@@ -30,6 +40,32 @@ export function SiteHeader() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadSession = async () => {
+      try {
+        const response = await fetch("/api/auth/session", { cache: "no-store" });
+        if (!response.ok) {
+          if (isMounted) setUserRole(null);
+          return;
+        }
+        const data = (await response.json()) as { role?: UserRole };
+        if (isMounted) {
+          setUserRole(data.role ?? null);
+        }
+      } catch {
+        if (isMounted) setUserRole(null);
+      }
+    };
+
+    loadSession();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [pathname]);
+
   const isActiveLink = (href: string) => {
     if (href === "/") return pathname === "/";
     return pathname.startsWith(href);
@@ -38,6 +74,9 @@ export function SiteHeader() {
   const toggleMobileSection = (label: string) => {
     setMobileExpanded((prev) => ({ ...prev, [label]: !prev[label] }));
   };
+
+  const isLoggedIn = userRole !== null;
+  const dashboardHref = userRole === "student" ? "/student/dashboard" : "/center/dashboard";
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur">
@@ -90,6 +129,17 @@ export function SiteHeader() {
         {/* Desktop nav */}
         <div className="hidden items-center gap-6 lg:flex">
           <nav className="flex items-center gap-4 text-sm font-semibold text-slate-700">
+            {isLoggedIn && (
+              <Link
+                href={dashboardHref}
+                onClick={handleNavigate}
+                className={`rounded-full px-3 py-2 transition hover:text-slate-900 ${
+                  isActiveLink(dashboardHref) ? "bg-slate-100 text-slate-900" : ""
+                }`}
+              >
+                Dashboard
+              </Link>
+            )}
             {navigationContent.navItems.map((item) => {
               if (!item.children) {
                 return (
@@ -108,6 +158,9 @@ export function SiteHeader() {
 
               const isOpen = openMenu === item.label;
               const isActive = isActiveLink(item.href);
+              const filteredChildren = isLoggedIn
+                ? item.children.filter((child) => !AUTH_LINKS.has(child.href))
+                : item.children;
 
               return (
                 <div key={item.href} className="relative">
@@ -135,7 +188,7 @@ export function SiteHeader() {
                   {isOpen && (
                     <div className="absolute right-0 mt-2 w-64 rounded-2xl border border-slate-200 bg-white p-3 shadow-lg">
                       <ul className="space-y-1 text-sm">
-                        {item.children.map((child) => (
+                        {filteredChildren.map((child) => (
                           <li key={child.href}>
                             <Link
                               href={child.href}
@@ -162,6 +215,17 @@ export function SiteHeader() {
         {isMobileOpen && (
           <div className="absolute left-0 right-0 top-full border-t border-slate-200 bg-white shadow-lg lg:hidden">
             <div className="flex flex-col gap-2 px-4 py-4 text-sm font-semibold text-slate-800">
+              {isLoggedIn && (
+                <Link
+                  href={dashboardHref}
+                  onClick={handleNavigate}
+                  className={`rounded-xl px-3 py-3 transition hover:bg-slate-50 ${
+                    isActiveLink(dashboardHref) ? "bg-slate-100 text-slate-900" : ""
+                  }`}
+                >
+                  Dashboard
+                </Link>
+              )}
               {navigationContent.navItems.map((item) => {
                 if (!item.children) {
                   return (
@@ -179,6 +243,9 @@ export function SiteHeader() {
                 }
 
                 const expanded = mobileExpanded[item.label];
+                const filteredChildren = isLoggedIn
+                  ? item.children.filter((child) => !AUTH_LINKS.has(child.href))
+                  : item.children;
 
                 return (
                   <div key={item.href} className="rounded-xl border border-slate-100">
@@ -206,7 +273,7 @@ export function SiteHeader() {
                     {expanded && (
                       <div className="border-t border-slate-100 bg-slate-50">
                         <ul className="flex flex-col">
-                          {item.children.map((child) => (
+                          {filteredChildren.map((child) => (
                             <li key={child.href}>
                               <Link
                                 href={child.href}
