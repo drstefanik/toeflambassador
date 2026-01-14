@@ -3,7 +3,6 @@ import { normalizeCenter } from "./normalize-center";
 import { slugify } from "./slugify";
 
 type Method = "GET" | "POST" | "PATCH";
-
 type QueryParams = Record<string, string | number | undefined>;
 
 export interface AirtableRecord<T> {
@@ -21,6 +20,7 @@ const AIRTABLE_BASE_URL = env.AIRTABLE_BASE_ID
   ? `https://api.airtable.com/v0/${env.AIRTABLE_BASE_ID}/`
   : "";
 
+// Airtable formulas: escape single quotes inside strings
 const escapeFormulaValue = (value: string) => value.replace(/'/g, "\\'");
 
 const withAuthHeaders = () => {
@@ -42,6 +42,9 @@ export async function airtableRequest<T>(
 ): Promise<T> {
   if (!AIRTABLE_BASE_URL) {
     throw new Error("Missing AIRTABLE_BASE_ID");
+  }
+  if (!tableName) {
+    throw new Error("Missing Airtable table name (env var empty?)");
   }
 
   const url = new URL(`${AIRTABLE_BASE_URL}${tableName}`);
@@ -77,25 +80,33 @@ const tables = {
 };
 
 export interface CenterFields {
+  Slug?: string;
   Name?: string;
   City?: string;
-  "Città"?: string;
-  Slug?: string;
+  Address?: string;
+  Phone?: string;
+  Email?: string;
+  Latitude?: number;
+  Longitude?: number;
+
   Active?: number;
+
   HeroImageUrl?: string;
+
   CallSectionEnabled?: boolean;
   CallSectionTitle?: string;
   CallSectionSubtitle?: string;
   CallSectionPhoneLabel?: string;
   CallSectionPhoneNumber?: string;
+
   ContactFormEmail?: string;
+
   WriteSectionEnabled?: boolean;
   WriteSectionTitle?: string;
   WriteSectionSubtitle?: string;
+
   MapEnabled?: boolean;
-  Latitude?: number;
-  Longitude?: number;
-  Address?: string;
+
   AdminEmail?: string;
 }
 
@@ -133,12 +144,28 @@ export interface OrderFields {
   Currency?: string;
 }
 
+/** Fetch ALL records with pagination */
+async function fetchAll<TFields>(tableName: string, params?: QueryParams) {
+  const records: AirtableRecord<TFields>[] = [];
+  let offset: string | undefined;
+
+  do {
+    const data = await airtableRequest<AirtableListResponse<TFields>>(
+      tableName,
+      "GET",
+      undefined,
+      { ...params, offset }
+    );
+    records.push(...(data.records || []));
+    offset = data.offset;
+  } while (offset);
+
+  return records;
+}
+
 export async function getAllCenters() {
-  const data = await airtableRequest<AirtableListResponse<CenterFields>>(
-    tables.centers,
-    "GET"
-  );
-  return data.records;
+  // IMPORTANT: pagination-safe
+  return fetchAll<CenterFields>(tables.centers);
 }
 
 export async function getCenters() {
@@ -146,41 +173,57 @@ export async function getCenters() {
 }
 
 export async function getActiveCenters() {
-  const data = await airtableRequest<AirtableListResponse<CenterFields>>(
-    tables.centers,
-    "GET",
-    undefined,
-    { filterByFormula: "{Active}=1" }
-  );
-  return data.records;
+  // Active is number (1/0) in your base
+  return fetchAll<CenterFields>(tables.centers, { filterByFormula: "{Active}=1" });
 }
 
+/**
+ * Robust:
+ * 1) Try exact Slug match (Airtable)
+ * 2) Fallback to LOWER(City)
+ * 3) Final fallback: load all centers and match in JS (pagination-safe)
+ */
 export async function getCenterBySlug(slug: string) {
-  const normalized = slugify(decodeURIComponent(slug ?? "")).trim();
-
-  // Airtable formula strings use double quotes; escape any that might appear (defensive).
-  const esc = (s: string) => s.replace(/"/g, '\"');
+  const raw = decodeURIComponent(slug ?? "").trim();
+  const normalized = raw.toLowerCase();
 
   try {
-    // 1) Lookup by stored Slug (preferred)
+    // 1) Exact match by stored Slug
     const bySlug = await airtableRequest<AirtableListResponse<CenterFields>>(
       tables.centers,
       "GET",
       undefined,
-      { maxRecords: 1, filterByFormula: `{Slug} = "${esc(normalized)}"` }
+      {
+        maxRecords: 1,
+        filterByFormula: `{Slug}='${escapeFormulaValue(normalized)}'`,
+      }
     );
+
     if (bySlug.records?.length) return normalizeCenter(bySlug.records[0]);
 
-    // 2) Fallback: match by City
+    // 2) Fallback by City (case-insensitive)
     const byCity = await airtableRequest<AirtableListResponse<CenterFields>>(
       tables.centers,
       "GET",
       undefined,
-      { maxRecords: 1, filterByFormula: `LOWER({City}) = "${esc(normalized)}"` }
+      {
+        maxRecords: 1,
+        filterByFormula: `LOWER({City})='${escapeFormulaValue(normalized)}'`,
+      }
     );
+
     if (byCity.records?.length) return normalizeCenter(byCity.records[0]);
 
-    return null;
+    // 3) JS fallback (pagination-safe)
+    const all = await getAllCenters();
+    const target = slugify(normalized);
+    const found = all.find((r) => {
+      const f = r.fields || {};
+      const s = slugify(String(f.Slug || f.City || f.Name || ""));
+      return s === target;
+    });
+
+    return found ? normalizeCenter(found) : null;
   } catch (e) {
     console.error("[getCenterBySlug] Airtable error:", e);
     throw e;
@@ -298,9 +341,7 @@ export async function updateOrderByStripeSessionId(
     }
   );
 
-  if (!data.records.length) {
-    return null;
-  }
+  if (!data.records.length) return null;
 
   const recordId = data.records[0].id;
   return airtableRequest<AirtableRecord<OrderFields>>(
