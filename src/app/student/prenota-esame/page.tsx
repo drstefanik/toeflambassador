@@ -1,6 +1,7 @@
 import { CentersDirectoryClient } from "@/components/centers-directory-client";
 import { CtaButton } from "@/components/cta-button";
 import { getActiveCenters } from "@/lib/repositories/centers";
+import { resolveCenterSlug } from "@/lib/centers";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -17,7 +18,8 @@ export default async function PrenotaEsamePage() {
     id: center.id,
     name: center.name,
     city: center.city,
-    slug: center.slug,
+    slug: resolveCenterSlug(center.fields),
+    fields: center.fields,
     address: center.fields.Address,
     latitude: center.fields.Latitude,
     longitude: center.fields.Longitude,

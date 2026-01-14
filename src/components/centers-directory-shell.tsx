@@ -8,6 +8,7 @@ type CenterPoint = {
   name: string;
   city?: string | null;
   slug?: string | null;
+  fields?: any;
   address?: string | null;
   latitude?: number | null;
   longitude?: number | null;
