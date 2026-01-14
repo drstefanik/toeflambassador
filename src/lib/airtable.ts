@@ -180,15 +180,6 @@ export async function getCenterBySlug(slug: string) {
     );
     if (byCity.records?.length) return normalizeCenter(byCity.records[0]);
 
-    // 3) Fallback: match by Città (legacy/IT column)
-    const byCitta = await airtableRequest<AirtableListResponse<CenterFields>>(
-      tables.centers,
-      "GET",
-      undefined,
-      { maxRecords: 1, filterByFormula: `LOWER({Città}) = "${esc(normalized)}"` }
-    );
-    if (byCitta.records?.length) return normalizeCenter(byCitta.records[0]);
-
     return null;
   } catch (e) {
     console.error("[getCenterBySlug] Airtable error:", e);
