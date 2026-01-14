@@ -2,6 +2,7 @@
 
 import "leaflet/dist/leaflet.css";
 import { useEffect } from "react";
+import Link from "next/link";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import L from "leaflet";
 
@@ -9,6 +10,7 @@ export interface CenterPoint {
   id: string;
   name: string;
   city?: string | null;
+  slug?: string | null;
   latitude?: number | null;
   longitude?: number | null;
 }
@@ -67,6 +69,14 @@ export function CentersMap({ centers, onSelect }: Props) {
               <div className="text-sm">
                 <p className="font-semibold">{center.name}</p>
                 {center.city && <p>{center.city}</p>}
+                {center.slug && (
+                  <Link
+                    href={`/centri/${center.slug}`}
+                    className="mt-2 inline-flex text-xs font-semibold text-sky-700"
+                  >
+                    Vai alla pagina del centro →
+                  </Link>
+                )}
               </div>
             </Popup>
           </Marker>

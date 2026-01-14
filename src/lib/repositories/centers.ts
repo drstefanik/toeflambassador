@@ -19,7 +19,7 @@ export interface CenterEntity {
 const mapCenter = (record: AirtableRecord<CenterFields>): CenterEntity => ({
   id: record.id,
   name: record.fields.Name ?? "",
-  city: record.fields.City,
+  city: record.fields.City ?? record.fields["Città"],
   slug: record.fields.Slug,
   fields: record.fields,
 });
