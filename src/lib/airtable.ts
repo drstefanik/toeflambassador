@@ -109,8 +109,6 @@ export interface CenterUserFields {
   Email?: string;
   PasswordHash?: string;
   Center?: string[];
-  OTP?: string;
-  OTPUsed?: boolean;
 }
 
 export interface CenterOTPFields {
