@@ -77,6 +77,7 @@ const tables = {
 export interface CenterFields {
   Name?: string;
   City?: string;
+  "Città"?: string;
   Slug?: string;
   Active?: number;
   HeroImageUrl?: string;
@@ -151,16 +152,43 @@ export async function getActiveCenters() {
 }
 
 export async function getCenterBySlug(slug: string) {
+  const slugValue = escapeFormulaValue(slug.toLowerCase());
   const data = await airtableRequest<AirtableListResponse<CenterFields>>(
     tables.centers,
     "GET",
     undefined,
     {
-      filterByFormula: `{Slug}='${escapeFormulaValue(slug)}'`,
+      filterByFormula: `{Slug}='${slugValue}'`,
       maxRecords: 1,
     }
   );
-  return data.records[0] ?? null;
+  if (data.records[0]) {
+    return data.records[0];
+  }
+
+  const fetchByCityField = (fieldName: "City" | "Città") =>
+    airtableRequest<AirtableListResponse<CenterFields>>(
+      tables.centers,
+      "GET",
+      undefined,
+      {
+        filterByFormula: `LOWER({${fieldName}})='${slugValue}'`,
+        maxRecords: 1,
+      }
+    );
+
+  try {
+    const fallback = await fetchByCityField("City");
+    if (fallback.records[0]) {
+      return fallback.records[0];
+    }
+  } catch (error) {
+    const fallback = await fetchByCityField("Città");
+    return fallback.records[0] ?? null;
+  }
+
+  const fallback = await fetchByCityField("Città");
+  return fallback.records[0] ?? null;
 }
 
 export async function getCenterById(centerId: string) {

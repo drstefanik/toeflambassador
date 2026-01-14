@@ -1,5 +1,6 @@
 import { CentersDirectoryShell } from "@/components/centers-directory-shell";
 import { getActiveCenters } from "@/lib/repositories/centers";
+import { slugify } from "@/lib/slugify";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -12,15 +13,21 @@ export default async function PartnerSediPage() {
     console.warn("Impossibile caricare la lista centri", error);
   }
 
-  const points = centers.map((center) => ({
-    id: center.id,
-    name: center.name,
-    city: center.city,
-    slug: center.slug,
-    address: center.fields.Address,
-    latitude: center.fields.Latitude,
-    longitude: center.fields.Longitude,
-  }));
+  const points = centers.map((center) => {
+    const fallbackSlugSource =
+      center.city ?? center.fields.City ?? center.fields["Città"] ?? center.fields.Name ?? "";
+    const resolvedSlug = center.slug ?? (fallbackSlugSource ? slugify(fallbackSlugSource) : null);
+
+    return ({
+      id: center.id,
+      name: center.name,
+      city: center.city,
+      slug: resolvedSlug,
+      address: center.fields.Address,
+      latitude: center.fields.Latitude,
+      longitude: center.fields.Longitude,
+    });
+  });
 
   return (
     <div className="bg-gradient-to-b from-white via-slate-50 to-[#F0FF96]/30">

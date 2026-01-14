@@ -20,6 +20,7 @@ export function CentersDirectory({ centers }: Props) {
     id: center.id,
     name: center.name,
     city: center.city,
+    slug: center.slug,
     latitude: center.latitude,
     longitude: center.longitude,
   })), [centers]);
