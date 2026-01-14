@@ -1,21 +1,8 @@
 import { notFound } from "next/navigation";
 import { getCenterBySlug } from "@/lib/airtable";
-import { getAllCentersForStaticPaths } from "@/lib/repositories/centers";
 
 export const revalidate = 60;
 export const dynamic = "force-dynamic";
-
-export async function generateStaticParams() {
-  try {
-    const centers = await getAllCentersForStaticPaths();
-    return centers
-      .filter((center) => center.slug)
-      .map((center) => ({ slug: center.slug as string }));
-  } catch (error) {
-    console.warn("Impossibile generare gli slug dei centri", error);
-    return [];
-  }
-}
 
 export default async function CenterPage({ params }: { params: { slug: string } }) {
   let center: any = null;
