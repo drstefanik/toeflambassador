@@ -37,6 +37,8 @@ export const env = {
   AIRTABLE_TABLE_CENTERS: getEnv("AIRTABLE_TABLE_CENTERS", { required: true }) || "Centers",
   AIRTABLE_TABLE_CENTER_USERS:
     getEnv("AIRTABLE_TABLE_CENTER_USERS", { required: true }) || "CenterUsers",
+  AIRTABLE_TABLE_CENTER_OTPS:
+    getEnv("AIRTABLE_TABLE_CENTER_OTPS", { required: true }) || "Center_OTPs",
   AIRTABLE_TABLE_STUDENTS: getEnv("AIRTABLE_TABLE_STUDENTS", { required: true }) || "Students",
   AIRTABLE_TABLE_ORDERS: getEnv("AIRTABLE_TABLE_ORDERS", { required: true }) || "Orders",
   STRIPE_API_KEY: getEnv("STRIPE_API_KEY"),

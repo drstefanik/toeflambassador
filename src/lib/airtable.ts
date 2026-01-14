@@ -69,6 +69,7 @@ export async function airtableRequest<T>(
 const tables = {
   centers: env.AIRTABLE_TABLE_CENTERS,
   centerUsers: env.AIRTABLE_TABLE_CENTER_USERS,
+  centerOtps: env.AIRTABLE_TABLE_CENTER_OTPS,
   students: env.AIRTABLE_TABLE_STUDENTS,
   orders: env.AIRTABLE_TABLE_ORDERS,
 };
@@ -109,6 +110,14 @@ export interface CenterUserFields {
   Center?: string[];
   OTP?: string;
   OTPUsed?: boolean;
+}
+
+export interface CenterOTPFields {
+  OTP?: string;
+  Center?: string[];
+  Status?: string;
+  ExpiresAt?: string;
+  UsedAt?: string;
 }
 
 export interface OrderFields {
@@ -219,6 +228,27 @@ export async function getCenterUserByEmail(email: string) {
 export async function updateCenterUser(centerUserId: string, fields: Partial<CenterUserFields>) {
   return airtableRequest<AirtableRecord<CenterUserFields>>(
     `${tables.centerUsers}/${centerUserId}`,
+    "PATCH",
+    { fields }
+  );
+}
+
+export async function getCenterOTPByCode(otp: string) {
+  const data = await airtableRequest<AirtableListResponse<CenterOTPFields>>(
+    tables.centerOtps,
+    "GET",
+    undefined,
+    {
+      filterByFormula: `AND({OTP}='${escapeFormulaValue(otp)}',{Status}='active')`,
+      maxRecords: 1,
+    }
+  );
+  return data.records[0] ?? null;
+}
+
+export async function updateCenterOTP(centerOtpId: string, fields: Partial<CenterOTPFields>) {
+  return airtableRequest<AirtableRecord<CenterOTPFields>>(
+    `${tables.centerOtps}/${centerOtpId}`,
     "PATCH",
     { fields }
   );
