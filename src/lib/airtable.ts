@@ -110,7 +110,7 @@ export interface StudentFields {
 export interface CenterUserFields {
   Email?: string;
   PasswordHash?: string;
-  Center?: string[];
+  Center?: string;
 }
 
 export interface CenterOTPFields {
