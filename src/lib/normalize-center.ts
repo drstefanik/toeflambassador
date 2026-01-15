@@ -8,6 +8,17 @@ export type Center = {
   email?: string;
   latitude?: number;
   longitude?: number;
+  heroImageUrl?: string | null;
+  mapEnabled?: boolean;
+  callSectionEnabled?: boolean;
+  callSectionTitle?: string;
+  callSectionSubtitle?: string;
+  callSectionPhoneLabel?: string;
+  callSectionPhoneNumber?: string;
+  writeSectionEnabled?: boolean;
+  writeSectionTitle?: string;
+  writeSectionSubtitle?: string;
+  contactFormEmail?: string;
 };
 
 export function normalizeCenter(record: any): Center {
@@ -23,5 +34,32 @@ export function normalizeCenter(record: any): Center {
     email: f.Email ? String(f.Email) : undefined,
     latitude: f.Latitude != null ? Number(f.Latitude) : undefined,
     longitude: f.Longitude != null ? Number(f.Longitude) : undefined,
+    heroImageUrl: f.HeroImageUrl ? String(f.HeroImageUrl) : null,
+    mapEnabled: f.MapEnabled != null ? Boolean(f.MapEnabled) : undefined,
+    callSectionEnabled:
+      f.CallSectionEnabled != null ? Boolean(f.CallSectionEnabled) : undefined,
+    callSectionTitle: f.CallSectionTitle
+      ? String(f.CallSectionTitle)
+      : undefined,
+    callSectionSubtitle: f.CallSectionSubtitle
+      ? String(f.CallSectionSubtitle)
+      : undefined,
+    callSectionPhoneLabel: f.CallSectionPhoneLabel
+      ? String(f.CallSectionPhoneLabel)
+      : undefined,
+    callSectionPhoneNumber: f.CallSectionPhoneNumber
+      ? String(f.CallSectionPhoneNumber)
+      : undefined,
+    writeSectionEnabled:
+      f.WriteSectionEnabled != null ? Boolean(f.WriteSectionEnabled) : undefined,
+    writeSectionTitle: f.WriteSectionTitle
+      ? String(f.WriteSectionTitle)
+      : undefined,
+    writeSectionSubtitle: f.WriteSectionSubtitle
+      ? String(f.WriteSectionSubtitle)
+      : undefined,
+    contactFormEmail: f.ContactFormEmail
+      ? String(f.ContactFormEmail)
+      : undefined,
   };
 }
