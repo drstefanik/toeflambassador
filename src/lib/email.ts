@@ -1,21 +1,15 @@
 import { Resend } from "resend";
+import type { CreateEmailOptions } from "resend";
 import { env } from "./config";
 
-type EmailTarget = string | string[];
-
 export interface SendEmailOptions {
-  to: EmailTarget;
+  to: string;
   subject: string;
   html?: string;
   text?: string;
-  cc?: EmailTarget;
+  cc?: string;
   replyTo?: string;
 }
-
-const formatTarget = (target?: EmailTarget) => {
-  if (!target) return undefined;
-  return Array.isArray(target) ? target : [target];
-};
 
 export async function sendEmail(options: SendEmailOptions) {
   if (!env.RESEND_API_KEY || !env.RESEND_FROM_EMAIL) {
@@ -25,14 +19,24 @@ export async function sendEmail(options: SendEmailOptions) {
 
   const resend = new Resend(env.RESEND_API_KEY);
 
-  const payload = {
-    from: env.RESEND_FROM_EMAIL,
-    to: formatTarget(options.to),
-    cc: formatTarget(options.cc),
+  const from = env.RESEND_FROM_EMAIL;
+  const to = options.to;
+  const cc = options.cc;
+  const replyTo = options.replyTo;
+  const html = options.html;
+  const text = options.text ?? options.html?.replace(/<[^>]+>/g, "");
+
+  const toList = to.trim() ? [to.trim()] : [];
+  const ccList = (cc ?? "").trim() ? [cc.trim()] : undefined;
+
+  const payload: CreateEmailOptions = {
+    from,
+    to: toList,
+    ...(ccList ? { cc: ccList } : {}),
     subject: options.subject,
-    reply_to: options.replyTo,
-    html: options.html,
-    text: options.text ?? options.html?.replace(/<[^>]+>/g, ""),
+    ...(replyTo ? { replyTo } : {}),
+    ...(html ? { html } : {}),
+    ...(text ? { text } : {}),
   };
 
   const response = await resend.emails.send(payload);
