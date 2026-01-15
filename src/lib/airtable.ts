@@ -76,7 +76,7 @@ const tables = {
   centerOtps: env.AIRTABLE_TABLE_CENTER_OTPS,
   students: env.AIRTABLE_TABLE_STUDENTS,
   orders: env.AIRTABLE_TABLE_ORDERS,
-  contactLeads: env.AIRTABLE_TABLE_CONTACT_LEADS,
+  contactLeads: env.AIRTABLE_TABLE_LEADS,
 };
 
 const CENTER_FIELDS = {

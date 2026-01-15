@@ -1,3 +1,4 @@
+import { Resend } from "resend";
 import { env } from "./config";
 
 type EmailTarget = string | string[];
@@ -17,13 +18,15 @@ const formatTarget = (target?: EmailTarget) => {
 };
 
 export async function sendEmail(options: SendEmailOptions) {
-  if (!env.EMAIL_API_KEY || !env.EMAIL_FROM) {
-    console.warn("Email not sent. Missing EMAIL_API_KEY or EMAIL_FROM");
+  if (!env.RESEND_API_KEY || !env.RESEND_FROM_EMAIL) {
+    console.warn("Email not sent. Missing RESEND_API_KEY or RESEND_FROM_EMAIL");
     return;
   }
 
+  const resend = new Resend(env.RESEND_API_KEY);
+
   const payload = {
-    from: env.EMAIL_FROM,
+    from: env.RESEND_FROM_EMAIL,
     to: formatTarget(options.to),
     cc: formatTarget(options.cc),
     subject: options.subject,
@@ -32,20 +35,12 @@ export async function sendEmail(options: SendEmailOptions) {
     text: options.text ?? options.html?.replace(/<[^>]+>/g, ""),
   };
 
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${env.EMAIL_API_KEY}`,
-    },
-    body: JSON.stringify(payload),
-  });
+  const response = await resend.emails.send(payload);
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error("Failed to send email", errorText);
+  if (response.error) {
+    console.error("Failed to send email", response.error);
     throw new Error("Unable to send email");
   }
 
-  return response.json();
+  return response.data;
 }
