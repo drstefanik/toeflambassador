@@ -4,19 +4,30 @@ import { getCenterBySlug } from "@/lib/airtable";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export default async function CenterPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
+type PageProps = {
+  params?: { slug?: string };
+  searchParams?: Record<string, string | string[] | undefined>;
+};
+
+export default async function CenterPage(props: PageProps) {
+  console.log("[centri/[slug]] PROPS_KEYS", Object.keys(props ?? {}));
+  console.log("[centri/[slug]] RAW_PARAMS", props?.params);
+  console.log("[centri/[slug]] RAW_SEARCH", props?.searchParams);
+
+  const params = await Promise.resolve(props.params);
+  const slug = params?.slug;
+
   let center: any = null;
 
   try {
-    console.log("[centri/[slug]] HIT", {
-      slug: params?.slug,
-      time: new Date().toISOString(),
-    });
-    center = await getCenterBySlug(params.slug);
+    console.log("[centri/[slug]] HIT", { slug, time: new Date().toISOString() });
+
+    if (!slug) {
+      console.log("[centri/[slug]] NOT FOUND", { slug });
+      return notFound();
+    }
+
+    center = await getCenterBySlug(slug);
   } catch (e) {
     console.error("[centri/[slug]] ERROR", e);
     return (
@@ -30,7 +41,7 @@ export default async function CenterPage({
   }
 
   if (!center) {
-    console.log("[centri/[slug]] NOT FOUND", { slug: params?.slug });
+    console.log("[centri/[slug]] NOT FOUND", { slug });
     return notFound();
   }
 
