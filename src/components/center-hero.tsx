@@ -19,18 +19,20 @@ export function CenterHero({
     <section className="relative overflow-hidden">
       <div className="absolute inset-0">
         {bg ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={bg}
-            alt=""
-            className="h-full w-full object-cover"
-            loading="lazy"
-          />
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={bg}
+              alt=""
+              className="h-full w-full object-cover"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 bg-white/75" />
+          </>
         ) : (
-          <div className="h-full w-full bg-gradient-to-b from-slate-100 via-white to-slate-200/60" />
+          <div className="h-full w-full bg-gradient-to-b from-white via-slate-50 to-slate-100" />
         )}
-        <div className="absolute inset-0 bg-white/70" />
-        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white/90 to-transparent" />
       </div>
 
       <div className="relative mx-auto max-w-6xl px-4 py-14 sm:py-16">
