@@ -21,13 +21,20 @@ const ratelimit = redis
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const getRequestIp = (request: NextRequest) => {
-  const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) {
-    return forwarded.split(",")[0]?.trim() || "unknown";
-  }
-  return request.ip || "unknown";
-};
+function getClientIp(request: NextRequest): string {
+  const h = request.headers;
+
+  const xff = h.get("x-forwarded-for");
+  if (xff) return xff.split(",")[0].trim();
+
+  const realIp = h.get("x-real-ip");
+  if (realIp) return realIp.trim();
+
+  const cf = h.get("cf-connecting-ip");
+  if (cf) return cf.trim();
+
+  return "unknown";
+}
 
 export async function POST(request: NextRequest) {
   let payload: {
@@ -75,7 +82,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const ip = getRequestIp(request);
+  const ip = getClientIp(request);
 
   if (ratelimit) {
     const { success } = await ratelimit.limit(`contactform:${ip}`);
