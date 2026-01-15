@@ -12,8 +12,13 @@ export default async function CenterPage({
   let center: any = null;
 
   try {
+    console.log("[centri/[slug]] HIT", {
+      slug: params?.slug,
+      time: new Date().toISOString(),
+    });
     center = await getCenterBySlug(params.slug);
-  } catch {
+  } catch (e) {
+    console.error("[centri/[slug]] ERROR", e);
     return (
       <main className="max-w-5xl mx-auto px-4 py-10">
         <h1 className="text-2xl font-semibold">Errore temporaneo</h1>
@@ -24,7 +29,10 @@ export default async function CenterPage({
     );
   }
 
-  if (!center) return notFound();
+  if (!center) {
+    console.log("[centri/[slug]] NOT FOUND", { slug: params?.slug });
+    return notFound();
+  }
 
   const mapsUrl =
     center.latitude && center.longitude
