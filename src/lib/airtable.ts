@@ -276,48 +276,36 @@ async function updateRecord<TFields>(
   );
 }
 
-/**
- * ✅ Robust center lookup:
- * 1) Try Airtable filter by Slug (fast)
- * 2) Fallback: load all centers and match in JS (always works)
- * 3) Extra fallback: slugify match on (Slug|City|Name)
- */
 export async function getCenterBySlug(slug: string) {
-  const requestedRaw = decodeURIComponent(slug ?? "");
-  const requested = norm(requestedRaw);
+  const requested = decodeURIComponent(slug ?? "").trim().toLowerCase();
 
   if (!requested) return null;
 
   try {
-    // 1) Fast path: Airtable filter by Slug
-    // (uses {Slug}='aversa' – consistent with your base)
-    const bySlug = await airtableRequest<AirtableListResponse<CenterFields>>(
-      tables.centers,
-      "GET",
-      undefined,
-      {
-        maxRecords: 1,
-        filterByFormula: `{${CENTER_FIELDS.Slug}}='${escapeFormulaValue(requested)}'`,
-      }
-    );
+    console.log("[getCenterBySlug] start", { slug });
 
-    if (bySlug.records?.length) {
-      return normalizeCenter(bySlug.records[0]);
-    }
-
-    // 2) JS fallback (pagination-safe)
     const all = await getAllCenters();
 
-    const hard = all.find((r) => norm(r.fields?.Slug) === requested);
-    if (hard) return normalizeCenter(hard);
+    console.log("[getCenterBySlug] centers loaded", {
+      count: all.length,
+      slugs: all.map((r) => r.fields?.Slug).slice(0, 10),
+    });
 
-    // 3) Soft fallback using slugify (in case someone types /centri/Aversa etc.)
+    const found = all.find((r) => {
+      const s = String(r.fields?.Slug ?? "").trim().toLowerCase();
+      return s === requested;
+    });
+
+    if (found) return normalizeCenter(found);
+
     const target = slugify(requested);
     const soft = all.find((r) => {
       const f = r.fields || {};
       const candidate = String(f.Slug || f.City || f.Name || "");
       return slugify(candidate) === target;
     });
+
+    if (!soft) console.log("[getCenterBySlug] no match", { requested });
 
     return soft ? normalizeCenter(soft) : null;
   } catch (e) {
