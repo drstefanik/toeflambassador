@@ -26,15 +26,18 @@ export async function sendEmail(options: SendEmailOptions) {
   const html = options.html;
   const text = options.text ?? options.html?.replace(/<[^>]+>/g, "");
 
-  const toList = to.trim() ? [to.trim()] : [];
-  const ccList = (cc ?? "").trim() ? [cc.trim()] : undefined;
+  const toList = (to ?? "").trim() ? [(to ?? "").trim()] : [];
+
+  const ccTrimmed = (cc ?? "").trim();
+  const ccList = ccTrimmed ? [ccTrimmed] : undefined;
+  const replyToTrimmed = (replyTo ?? "").trim();
 
   const payload: CreateEmailOptions = {
     from,
     to: toList,
     ...(ccList ? { cc: ccList } : {}),
     subject: options.subject,
-    ...(replyTo ? { replyTo } : {}),
+    ...(replyToTrimmed ? { replyTo: replyToTrimmed } : {}),
     ...(html ? { html } : {}),
     ...(text ? { text } : {}),
   };
