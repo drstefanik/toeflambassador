@@ -76,6 +76,7 @@ const tables = {
   centerOtps: env.AIRTABLE_TABLE_CENTER_OTPS,
   students: env.AIRTABLE_TABLE_STUDENTS,
   orders: env.AIRTABLE_TABLE_ORDERS,
+  contactLeads: env.AIRTABLE_TABLE_CONTACT_LEADS,
 };
 
 const CENTER_FIELDS = {
@@ -140,6 +141,20 @@ const ORDER_FIELDS = {
   Currency: "Currency",
 };
 
+const CONTACT_LEAD_FIELDS = {
+  CenterSlug: "CenterSlug",
+  CenterName: "CenterName",
+  Email: "Email",
+  Mobile: "Mobile",
+  Subject: "Subject",
+  Message: "Message",
+  Ip: "IP",
+  UserAgent: "UserAgent",
+  Status: "Status",
+  ResendMessageId: "ResendMessageId",
+  CreatedAt: "CreatedAt",
+};
+
 export interface CenterFields {
   Slug?: string;
   Name?: string;
@@ -200,6 +215,20 @@ export interface OrderFields {
   Student?: string[];
   AmountTotal?: number;
   Currency?: string;
+}
+
+export interface ContactLeadFields {
+  CenterSlug?: string;
+  CenterName?: string;
+  Email?: string;
+  Mobile?: string;
+  Subject?: string;
+  Message?: string;
+  Ip?: string;
+  UserAgent?: string;
+  Status?: string;
+  ResendMessageId?: string;
+  CreatedAt?: string;
 }
 
 async function fetchAll<TFields>(tableName: string, params?: QueryParams) {
@@ -314,6 +343,18 @@ export async function getCenterBySlug(slug: string) {
   }
 }
 
+export async function getCenterRecordBySlug(slug: string) {
+  const requested = decodeURIComponent(slug ?? "").trim();
+
+  if (!requested) return null;
+
+  return fetchFirst<CenterFields>(tables.centers, {
+    filterByFormula: `{${CENTER_FIELDS.Slug}}='${escapeFormulaValue(
+      requested
+    )}'`,
+  });
+}
+
 export async function getCenterById(centerId: string) {
   return airtableRequest<AirtableRecord<CenterFields>>(
     `${tables.centers}/${centerId}`,
@@ -337,6 +378,22 @@ export async function createCenterUser(fields: CenterUserFields) {
   return createRecord<CenterUserFields>(tables.centerUsers, {
     ...fields,
     Email: normalizedEmail ?? fields.Email,
+  });
+}
+
+export async function createContactLead(fields: ContactLeadFields) {
+  return createRecord<ContactLeadFields>(tables.contactLeads, {
+    [CONTACT_LEAD_FIELDS.CenterSlug]: fields.CenterSlug,
+    [CONTACT_LEAD_FIELDS.CenterName]: fields.CenterName,
+    [CONTACT_LEAD_FIELDS.Email]: fields.Email,
+    [CONTACT_LEAD_FIELDS.Mobile]: fields.Mobile,
+    [CONTACT_LEAD_FIELDS.Subject]: fields.Subject,
+    [CONTACT_LEAD_FIELDS.Message]: fields.Message,
+    [CONTACT_LEAD_FIELDS.Ip]: fields.Ip,
+    [CONTACT_LEAD_FIELDS.UserAgent]: fields.UserAgent,
+    [CONTACT_LEAD_FIELDS.Status]: fields.Status,
+    [CONTACT_LEAD_FIELDS.ResendMessageId]: fields.ResendMessageId,
+    [CONTACT_LEAD_FIELDS.CreatedAt]: fields.CreatedAt,
   });
 }
 

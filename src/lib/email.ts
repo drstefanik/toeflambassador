@@ -8,6 +8,7 @@ export interface SendEmailOptions {
   html?: string;
   text?: string;
   cc?: EmailTarget;
+  replyTo?: string;
 }
 
 const formatTarget = (target?: EmailTarget) => {
@@ -26,6 +27,7 @@ export async function sendEmail(options: SendEmailOptions) {
     to: formatTarget(options.to),
     cc: formatTarget(options.cc),
     subject: options.subject,
+    reply_to: options.replyTo,
     html: options.html,
     text: options.text ?? options.html?.replace(/<[^>]+>/g, ""),
   };
