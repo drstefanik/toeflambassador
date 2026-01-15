@@ -1,26 +1,25 @@
 import { notFound } from "next/navigation";
 import { getCenterBySlug } from "@/lib/airtable";
 
-export const revalidate = 60;
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
-export default async function CenterPage({ params }: { params: { slug: string } }) {
+export default async function CenterPage({
+  params,
+}: {
+  params: { slug: string };
+}) {
   let center: any = null;
 
   try {
     center = await getCenterBySlug(params.slug);
-  } catch (e) {
+  } catch {
     return (
       <main className="max-w-5xl mx-auto px-4 py-10">
-        <a href="/partner/sedi" className="text-sm hover:underline">
-          ← Torna all’elenco sedi
-        </a>
-        <div className="mt-6 rounded-2xl border bg-white/70 p-8 shadow-sm">
-          <h1 className="text-2xl font-semibold">Errore temporaneo</h1>
-          <p className="mt-2 opacity-80">
-            Non è stato possibile caricare i dati del centro in questo momento. Riprova tra poco.
-          </p>
-        </div>
+        <h1 className="text-2xl font-semibold">Errore temporaneo</h1>
+        <p className="mt-2 opacity-80">
+          Non è stato possibile caricare i dati del centro. Riprova più tardi.
+        </p>
       </main>
     );
   }
@@ -69,7 +68,12 @@ export default async function CenterPage({ params }: { params: { slug: string } 
         </div>
 
         <div className="mt-6">
-          <a className="underline" href={mapsUrl} target="_blank" rel="noreferrer">
+          <a
+            className="underline"
+            href={mapsUrl}
+            target="_blank"
+            rel="noreferrer"
+          >
             Apri su Google Maps →
           </a>
         </div>
