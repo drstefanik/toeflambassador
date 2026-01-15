@@ -7,7 +7,12 @@ type Props = {
   heroImageUrl?: string | null;
 };
 
-export function CenterHero({ backHref = "/partner/sedi", city, name, heroImageUrl }: Props) {
+export function CenterHero({
+  backHref = "/partner/sedi",
+  city,
+  name,
+  heroImageUrl,
+}: Props) {
   const bg = heroImageUrl?.trim();
 
   return (
@@ -22,10 +27,8 @@ export function CenterHero({ backHref = "/partner/sedi", city, name, heroImageUr
             loading="lazy"
           />
         ) : (
-          <div className="h-full w-full bg-gradient-to-br from-slate-900 to-slate-700" />
+          <div className="h-full w-full bg-gradient-to-b from-slate-100 via-white to-slate-200/60" />
         )}
-
-        {/* overlay “chiaro” coerente col sito */}
         <div className="absolute inset-0 bg-white/70" />
         <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white to-transparent" />
       </div>
@@ -33,7 +36,7 @@ export function CenterHero({ backHref = "/partner/sedi", city, name, heroImageUr
       <div className="relative mx-auto max-w-6xl px-4 py-14 sm:py-16">
         <Link
           href={backHref}
-          className="inline-flex items-center text-sm font-medium text-slate-700 hover:text-slate-900"
+          className="inline-flex items-center text-sm text-slate-700 hover:text-slate-900"
         >
           ← Torna all’elenco sedi
         </Link>

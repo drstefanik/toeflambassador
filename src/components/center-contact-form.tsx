@@ -70,18 +70,18 @@ export function CenterContactForm({ toEmail, centerName }: Props) {
   };
 
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6 text-white shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur sm:p-8">
+    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
       <div className="flex items-center justify-between gap-3">
-        <h3 className="text-xl font-semibold">WRITE US</h3>
-        <div className="h-1 w-14 rounded-full bg-red-600" />
+        <h3 className="text-xl font-semibold text-slate-900">WRITE US</h3>
+        <div className="h-1 w-14 rounded-full bg-sky-600" />
       </div>
 
-      <p className="mt-2 text-sm text-white/75">
+      <p className="mt-2 text-sm text-slate-600">
         Compila il form e ti ricontattiamo al più presto.
       </p>
 
       {!canSend ? (
-        <p className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-100">
+        <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
           Email del centro non disponibile. Aggiungi <b>ContactFormEmail</b> (o
           <b> Email</b>) su Airtable.
         </p>
@@ -93,12 +93,12 @@ export function CenterContactForm({ toEmail, centerName }: Props) {
             name="name"
             required
             placeholder="Nome e Cognome"
-            className="h-12 rounded-2xl border border-white/10 bg-black/30 px-4 text-sm text-white placeholder:text-white/40 outline-none focus:border-red-500/60"
+            className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200/50"
           />
           <input
             name="mobile"
             placeholder="Mobile"
-            className="h-12 rounded-2xl border border-white/10 bg-black/30 px-4 text-sm text-white placeholder:text-white/40 outline-none focus:border-red-500/60"
+            className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200/50"
           />
         </div>
 
@@ -107,13 +107,13 @@ export function CenterContactForm({ toEmail, centerName }: Props) {
           type="email"
           required
           placeholder="Email"
-          className="h-12 rounded-2xl border border-white/10 bg-black/30 px-4 text-sm text-white placeholder:text-white/40 outline-none focus:border-red-500/60"
+          className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200/50"
         />
 
         <input
           name="subject"
           placeholder="Oggetto"
-          className="h-12 rounded-2xl border border-white/10 bg-black/30 px-4 text-sm text-white placeholder:text-white/40 outline-none focus:border-red-500/60"
+          className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200/50"
         />
 
         <textarea
@@ -121,26 +121,26 @@ export function CenterContactForm({ toEmail, centerName }: Props) {
           required
           placeholder="Messaggio"
           rows={5}
-          className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white placeholder:text-white/40 outline-none focus:border-red-500/60"
+          className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200/50"
         />
 
         {canSend ? (
           <button
             type="submit"
             disabled={loading}
-            className="mt-2 inline-flex h-12 items-center justify-center rounded-2xl bg-red-600 px-6 text-sm font-semibold text-white hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-2 inline-flex h-12 items-center justify-center rounded-2xl bg-sky-600 px-6 text-sm font-semibold text-white hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? "Invio..." : "Scrivi ora"}
           </button>
         ) : null}
 
         {sent === "ok" ? (
-          <p className="text-sm text-white/80">
+          <p className="text-sm text-slate-600">
             Messaggio pronto ✨ (se non hai endpoint, si aprirà il client email).
           </p>
         ) : null}
         {sent === "error" ? (
-          <p className="text-sm text-red-200">
+          <p className="text-sm text-rose-600">
             Errore durante l’invio. Riprova o scrivi direttamente via email.
           </p>
         ) : null}

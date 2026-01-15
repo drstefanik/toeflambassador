@@ -12,7 +12,11 @@ type PageProps = {
   searchParams?: Record<string, string | string[] | undefined>;
 };
 
-function buildMapsEmbedUrl(args: { lat?: number; lng?: number; address?: string }) {
+function buildMapsEmbedUrl(args: {
+  lat?: number;
+  lng?: number;
+  address?: string;
+}) {
   if (args.lat != null && args.lng != null) {
     return `https://www.google.com/maps?q=${args.lat},${args.lng}&output=embed`;
   }
@@ -38,11 +42,11 @@ export default async function CenterPage(props: PageProps) {
           ← Torna all’elenco sedi
         </Link>
 
-        <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-          <h1 className="text-2xl font-semibold text-slate-900">Errore temporaneo</h1>
+        <div className="mt-6 rounded-2xl border bg-white p-8 shadow-sm">
+          <h1 className="text-2xl font-semibold">Errore temporaneo</h1>
           <p className="mt-2 text-slate-600">
-            Non è stato possibile caricare i dati del centro in questo momento. Riprova tra
-            poco.
+            Non è stato possibile caricare i dati del centro in questo momento.
+            Riprova tra poco.
           </p>
         </div>
       </main>
@@ -51,7 +55,8 @@ export default async function CenterPage(props: PageProps) {
 
   if (!center) return notFound();
 
-  const phone = center.callSectionPhoneNumber || center.phone || undefined;
+  const phone =
+    center.callSectionPhoneNumber || center.phone || undefined;
   const phoneLabel = center.callSectionPhoneLabel || "Telefono";
   const email = center.email || "";
   const address = center.address || "";
@@ -96,7 +101,7 @@ export default async function CenterPage(props: PageProps) {
             <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
               <div className="flex items-center justify-between gap-3">
                 <h3 className="text-xl font-semibold text-slate-900">
-                  {center.callSectionTitle || "Call us"}
+                  {center.callSectionTitle || "CALL US"}
                 </h3>
                 <div className="h-1 w-14 rounded-full bg-sky-600" />
               </div>
@@ -109,7 +114,9 @@ export default async function CenterPage(props: PageProps) {
               <div className="mt-6 space-y-3 text-sm">
                 <div>
                   <div className="text-slate-500">Indirizzo</div>
-                  <div className="font-medium text-slate-900">{address || "—"}</div>
+                  <div className="font-medium text-slate-900">
+                    {address || "—"}
+                  </div>
                 </div>
 
                 {phone ? (
@@ -170,9 +177,9 @@ export default async function CenterPage(props: PageProps) {
 
         {mapEnabled && hasMapQuery ? (
           <section className="mt-8 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-            <div className="flex items-center justify-between gap-3 px-6 py-5 sm:px-8">
+            <div className="flex items-center justify-between gap-3 px-6 py-5 text-slate-900 sm:px-8">
               <div>
-                <h3 className="text-lg font-semibold text-slate-900">Dove siamo</h3>
+                <h3 className="text-lg font-semibold">Dove siamo</h3>
                 <p className="text-sm text-slate-600">{address || "—"}</p>
               </div>
               <div className="h-1 w-14 rounded-full bg-sky-600" />
