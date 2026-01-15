@@ -34,7 +34,6 @@ export default async function CenterPage(props: PageProps) {
     if (!slug) {
       return notFound();
     }
-
     center = await getCenterBySlug(slug);
   } catch {
     return (
