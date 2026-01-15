@@ -5,11 +5,10 @@ export function resolveCenterSlug(fields: any) {
     fields?.Slug ||
     fields?.slug ||
     fields?.City ||
-    fields?.["Città"] ||
-    fields?.Citta ||
     fields?.city ||
     fields?.Name ||
-    fields?.Nome ||
+    fields?.name ||
     "";
+
   return slugify(String(raw));
 }
