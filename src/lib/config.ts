@@ -41,6 +41,8 @@ export const env = {
     getEnv("AIRTABLE_TABLE_CENTER_OTPS", { required: true }) || "Center_OTPs",
   AIRTABLE_TABLE_STUDENTS: getEnv("AIRTABLE_TABLE_STUDENTS", { required: true }) || "Students",
   AIRTABLE_TABLE_ORDERS: getEnv("AIRTABLE_TABLE_ORDERS", { required: true }) || "Orders",
+  AIRTABLE_TABLE_CONTACT_LEADS:
+    getEnv("AIRTABLE_TABLE_CONTACT_LEADS", { required: true }) || "ContactLeads",
   STRIPE_API_KEY: getEnv("STRIPE_API_KEY"),
   TOEFL_iBT_Voucher_ID: getEnv("TOEFL_iBT_Voucher_ID"),
   TOEFL_Ambassador_Activation_Pack_ID: getEnv(
@@ -53,6 +55,9 @@ export const env = {
   NEXT_PUBLIC_CALENDLY_STUDENT_URL: getEnv("NEXT_PUBLIC_CALENDLY_STUDENT_URL"),
   NEXT_PUBLIC_CALENDLY_CENTER_URL: getEnv("NEXT_PUBLIC_CALENDLY_CENTER_URL"),
   ADMIN_CONTACT_EMAIL: getEnv("ADMIN_CONTACT_EMAIL"),
+  CONTROL_CC_EMAIL: getEnv("CONTROL_CC_EMAIL"),
+  UPSTASH_REDIS_REST_URL: getEnv("UPSTASH_REDIS_REST_URL"),
+  UPSTASH_REDIS_REST_TOKEN: getEnv("UPSTASH_REDIS_REST_TOKEN"),
 };
 
 export type AppEnv = typeof env;

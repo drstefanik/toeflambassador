@@ -84,7 +84,6 @@ export default async function CenterPage(props: PageProps) {
     (center.latitude != null && center.longitude != null) || address || city
   );
 
-  const contactEmail = center.contactFormEmail || email || undefined;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-[#F0FF96]/30">
@@ -171,7 +170,10 @@ export default async function CenterPage(props: PageProps) {
           ) : null}
 
           {writeSectionEnabled ? (
-            <CenterContactForm toEmail={contactEmail} centerName={center.name} />
+            <CenterContactForm
+              centerSlug={slug}
+              centerName={center.name}
+            />
           ) : null}
         </section>
 
