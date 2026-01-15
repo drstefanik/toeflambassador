@@ -128,7 +128,7 @@ export function CenterContactForm({ toEmail, centerName }: Props) {
           <button
             type="submit"
             disabled={loading}
-            className="mt-2 inline-flex h-12 items-center justify-center rounded-2xl bg-sky-600 px-6 text-sm font-semibold text-white hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-2 inline-flex h-12 items-center justify-center rounded-2xl bg-sky-600 px-6 text-sm font-semibold text-white shadow-sm hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? "Invio..." : "Scrivi ora"}
           </button>

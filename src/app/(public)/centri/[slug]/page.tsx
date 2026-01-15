@@ -111,17 +111,17 @@ export default async function CenterPage(props: PageProps) {
                   "Contatta direttamente il centro per informazioni rapide."}
               </p>
 
-              <div className="mt-6 space-y-3 text-sm">
-                <div>
-                  <div className="text-slate-500">Indirizzo</div>
-                  <div className="font-medium text-slate-900">
-                    {address || "—"}
+                <div className="mt-6 space-y-3 text-sm">
+                  <div>
+                    <div className="text-slate-600">Indirizzo</div>
+                    <div className="font-medium text-slate-900">
+                      {address || "—"}
+                    </div>
                   </div>
-                </div>
 
                 {phone ? (
                   <div>
-                    <div className="text-slate-500">{phoneLabel}</div>
+                    <div className="text-slate-600">{phoneLabel}</div>
                     <a
                       className="font-semibold text-slate-900 underline decoration-slate-300 hover:decoration-slate-500"
                       href={`tel:${phone}`}
@@ -130,12 +130,12 @@ export default async function CenterPage(props: PageProps) {
                     </a>
                   </div>
                 ) : (
-                  <div className="text-slate-500">Telefono non disponibile</div>
+                  <div className="text-slate-600">Telefono non disponibile</div>
                 )}
 
                 {email ? (
                   <div>
-                    <div className="text-slate-500">Email</div>
+                    <div className="text-slate-600">Email</div>
                     <a
                       className="font-semibold text-slate-900 underline decoration-slate-300 hover:decoration-slate-500"
                       href={`mailto:${email}`}
