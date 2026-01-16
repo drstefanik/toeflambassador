@@ -152,7 +152,6 @@ const CONTACT_LEAD_FIELDS = {
   UserAgent: "UserAgent",
   Status: "Status",
   ResendMessageId: "ResendMessageId",
-  CreatedAt: "CreatedAt",
 };
 
 export interface CenterFields {
@@ -228,7 +227,6 @@ export interface ContactLeadFields {
   UserAgent?: string;
   Status?: string;
   ResendMessageId?: string;
-  CreatedAt?: string;
 }
 
 async function fetchAll<TFields>(tableName: string, params?: QueryParams) {
@@ -393,7 +391,6 @@ export async function createContactLead(fields: ContactLeadFields) {
     [CONTACT_LEAD_FIELDS.UserAgent]: fields.UserAgent,
     [CONTACT_LEAD_FIELDS.Status]: fields.Status,
     [CONTACT_LEAD_FIELDS.ResendMessageId]: fields.ResendMessageId,
-    [CONTACT_LEAD_FIELDS.CreatedAt]: fields.CreatedAt,
   });
 }
 

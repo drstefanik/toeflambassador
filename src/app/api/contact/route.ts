@@ -164,7 +164,6 @@ export async function POST(request: NextRequest) {
       UserAgent: userAgent,
       Status: status,
       ResendMessageId: resendMessageId,
-      CreatedAt: timestamp,
     });
   } catch (error) {
     leadSaved = false;
