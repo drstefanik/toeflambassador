@@ -161,6 +161,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  let leadWarning: string | undefined;
   try {
     await createContactLead({
       CenterSlug: centerSlug,
@@ -177,9 +178,12 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Airtable lead save failed", error);
+    leadWarning = "lead_not_saved";
   }
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json(
+    leadWarning ? { ok: true, warning: leadWarning } : { ok: true }
+  );
 }
 
 export async function GET() {
