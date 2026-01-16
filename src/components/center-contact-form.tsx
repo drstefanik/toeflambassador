@@ -12,11 +12,13 @@ type Props = {
 export function CenterContactForm({ centerSlug, centerName, title, subtitle }: Props) {
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState<"idle" | "ok" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setSent("idle");
+    setErrorMessage(null);
 
     try {
       const fd = new FormData(e.currentTarget);
@@ -38,23 +40,32 @@ export function CenterContactForm({ centerSlug, centerName, title, subtitle }: P
       });
 
       let data: any = null;
-      const ct = res.headers.get("content-type") || "";
-      if (ct.includes("application/json")) {
+      try {
         data = await res.json();
-      } else {
-        const txt = await res.text();
-        data = { ok: res.ok, raw: txt };
+      } catch {
+        data = null;
       }
 
-      if (res.ok && data?.ok === true) {
+      console.debug("contact response", res.status, data);
+
+      if (res.ok && (data === null || data?.ok === true)) {
         setSent("ok");
+        setErrorMessage(null);
         e.currentTarget.reset();
       } else {
-        console.error("Contact form failed", { status: res.status, data });
+        console.error("Contact form failed", {
+          status: res.status,
+          error: data?.error,
+          data,
+        });
+        setErrorMessage(
+          data?.error || "Errore durante l'invio. Riprova o scrivi direttamente via email."
+        );
         setSent("error");
       }
     } catch (err) {
       console.error("Contact form exception", err);
+      setErrorMessage("Errore durante l'invio. Riprova o scrivi direttamente via email.");
       setSent("error");
     } finally {
       setLoading(false);
@@ -129,7 +140,7 @@ export function CenterContactForm({ centerSlug, centerName, title, subtitle }: P
 
         {sent === "error" && (
           <p className="text-red-600 mt-3">
-            Errore durante l&apos;invio. Riprova o scrivi direttamente via email.
+            {errorMessage || "Errore durante l'invio. Riprova o scrivi direttamente via email."}
           </p>
         )}
         {sent === "ok" && (
