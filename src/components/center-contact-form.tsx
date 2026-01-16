@@ -5,9 +5,11 @@ import { type FormEvent, useState } from "react";
 type Props = {
   centerSlug: string;
   centerName?: string;
+  title?: string;
+  subtitle?: string;
 };
 
-export function CenterContactForm({ centerSlug, centerName }: Props) {
+export function CenterContactForm({ centerSlug, centerName, title, subtitle }: Props) {
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState<"idle" | "ok" | "error">("idle");
 
@@ -62,12 +64,14 @@ export function CenterContactForm({ centerSlug, centerName }: Props) {
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
       <div className="flex items-center justify-between gap-3">
-        <h3 className="text-xl font-semibold text-slate-900">WRITE US</h3>
+        <h3 className="text-xl font-semibold text-slate-900">
+          {title || "WRITE US"}
+        </h3>
         <div className="h-1 w-14 rounded-full bg-sky-600" />
       </div>
 
       <p className="mt-2 text-sm text-slate-600">
-        Compila il form e ti ricontattiamo al più presto.
+        {subtitle || "Compila il form e ti ricontattiamo al più presto."}
       </p>
 
       <form onSubmit={onSubmit} className="mt-6 grid gap-4">

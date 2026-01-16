@@ -14,8 +14,7 @@ export function PageSettingsForm({ centerId, fields }: Props) {
     CallSectionEnabled: Boolean(fields.CallSectionEnabled),
     CallSectionTitle: fields.CallSectionTitle ?? "",
     CallSectionSubtitle: fields.CallSectionSubtitle ?? "",
-    CallSectionPhoneLabel: fields.CallSectionPhoneLabel ?? "",
-    CallSectionPhoneNumber: fields.CallSectionPhoneNumber ?? "",
+    Phone: fields.Phone ?? "",
     WriteSectionEnabled: Boolean(fields.WriteSectionEnabled),
     WriteSectionTitle: fields.WriteSectionTitle ?? "",
     WriteSectionSubtitle: fields.WriteSectionSubtitle ?? "",
@@ -26,7 +25,9 @@ export function PageSettingsForm({ centerId, fields }: Props) {
     Address: fields.Address ?? "",
   });
   const [status, setStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
-  const [error, setError] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(
+    null
+  );
 
   const updateField = (field: keyof typeof form, value: string | boolean) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -35,7 +36,7 @@ export function PageSettingsForm({ centerId, fields }: Props) {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setStatus("saving");
-    setError(null);
+    setFeedback(null);
 
     try {
       const response = await fetch("/api/center/page", {
@@ -44,22 +45,47 @@ export function PageSettingsForm({ centerId, fields }: Props) {
         body: JSON.stringify({
           centerId,
           fields: {
-            ...form,
-            Latitude: form.Latitude ? Number(form.Latitude) : undefined,
-            Longitude: form.Longitude ? Number(form.Longitude) : undefined,
+            HeroImageUrl: form.HeroImageUrl,
+            CallSectionEnabled: form.CallSectionEnabled,
+            CallSectionTitle: form.CallSectionTitle,
+            CallSectionSubtitle: form.CallSectionSubtitle,
+            Phone: form.Phone,
+            WriteSectionEnabled: form.WriteSectionEnabled,
+            WriteSectionTitle: form.WriteSectionTitle,
+            WriteSectionSubtitle: form.WriteSectionSubtitle,
+            ContactFormEmail: form.ContactFormEmail,
+            MapEnabled: form.MapEnabled,
+            Latitude: form.Latitude,
+            Longitude: form.Longitude,
+            Address: form.Address,
           },
         }),
       });
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || "Impossibile salvare le modifiche");
+      let data: { ok?: boolean; error?: string } | null = null;
+      try {
+        data = await response.json();
+      } catch {
+        data = null;
       }
-      setStatus("success");
+
+      if (data?.ok === true) {
+        setStatus("success");
+        setFeedback({ type: "success", message: "Impostazioni salvate." });
+      } else {
+        setStatus("error");
+        setFeedback({
+          type: "error",
+          message: data?.error || "Impossibile salvare le impostazioni",
+        });
+      }
     } catch (err) {
       setStatus("error");
-      setError((err as Error).message);
+      setFeedback({
+        type: "error",
+        message: (err as Error).message || "Impossibile salvare le impostazioni",
+      });
     } finally {
-      setTimeout(() => setStatus("idle"), 3000);
+      setStatus((prev) => (prev === "saving" ? "idle" : prev));
     }
   };
 
@@ -97,16 +123,10 @@ export function PageSettingsForm({ centerId, fields }: Props) {
             onChange={(event) => updateField("CallSectionSubtitle", event.target.value)}
           />
           <input
-            placeholder="Etichetta telefono"
+            placeholder="Telefono"
             className="rounded-lg border border-slate-200 px-3 py-2"
-            value={form.CallSectionPhoneLabel}
-            onChange={(event) => updateField("CallSectionPhoneLabel", event.target.value)}
-          />
-          <input
-            placeholder="Numero di telefono"
-            className="rounded-lg border border-slate-200 px-3 py-2"
-            value={form.CallSectionPhoneNumber}
-            onChange={(event) => updateField("CallSectionPhoneNumber", event.target.value)}
+            value={form.Phone}
+            onChange={(event) => updateField("Phone", event.target.value)}
           />
         </div>
       </div>
@@ -173,8 +193,12 @@ export function PageSettingsForm({ centerId, fields }: Props) {
         />
       </div>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
-      {status === "success" && <p className="text-sm text-emerald-600">Impostazioni salvate.</p>}
+      {feedback?.type === "error" && (
+        <p className="text-sm text-red-600">{feedback.message}</p>
+      )}
+      {feedback?.type === "success" && (
+        <p className="text-sm text-emerald-600">{feedback.message}</p>
+      )}
       <button
         type="submit"
         disabled={status === "saving"}

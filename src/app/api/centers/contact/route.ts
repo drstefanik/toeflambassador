@@ -11,12 +11,13 @@ export async function POST(request: NextRequest) {
     }
 
     const center = await getCenterBySlug(centerSlug);
-    if (!center || !center.fields.ContactFormEmail) {
+    const targetEmail = center?.fields.ContactFormEmail || center?.fields.Email;
+    if (!center || !targetEmail) {
       return NextResponse.json({ error: "Centro non trovato" }, { status: 404 });
     }
 
     await sendEmail({
-      to: center.fields.ContactFormEmail,
+      to: targetEmail,
       cc: env.ADMIN_CONTACT_EMAIL || undefined,
       subject: `[TOEFL Ambassador] ${subject}`,
       html: `<p>Hai ricevuto un nuovo messaggio dal portale TOEFL Ambassador.</p><p><strong>Nome:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><p><strong>Messaggio:</strong><br/>${message}</p>`,
