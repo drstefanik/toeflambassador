@@ -143,6 +143,15 @@ export async function POST(request: NextRequest) {
     status = "failed";
   }
 
+  if (status === "failed") {
+    return NextResponse.json(
+      { ok: false, error: "Unable to send" },
+      { status: 500 }
+    );
+  }
+
+  let leadSaved = true;
+
   try {
     await createContactLead({
       CenterSlug: centerSlug,
@@ -158,17 +167,11 @@ export async function POST(request: NextRequest) {
       CreatedAt: timestamp,
     });
   } catch (error) {
-    console.error("contact lead save failed", error);
+    leadSaved = false;
+    console.error("Airtable lead save failed", error);
   }
 
-  if (status === "failed") {
-    return NextResponse.json(
-      { ok: false, error: "Unable to send" },
-      { status: 500 }
-    );
-  }
-
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, leadSaved });
 }
 
 export async function GET() {

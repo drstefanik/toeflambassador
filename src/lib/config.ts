@@ -41,8 +41,8 @@ export const env = {
     getEnv("AIRTABLE_TABLE_CENTER_OTPS", { required: true }) || "Center_OTPs",
   AIRTABLE_TABLE_STUDENTS: getEnv("AIRTABLE_TABLE_STUDENTS", { required: true }) || "Students",
   AIRTABLE_TABLE_ORDERS: getEnv("AIRTABLE_TABLE_ORDERS", { required: true }) || "Orders",
-  AIRTABLE_TABLE_CONTACT_LEADS:
-    getEnv("AIRTABLE_TABLE_CONTACT_LEADS", { required: true }) || "ContactLeads",
+  AIRTABLE_TABLE_LEADS:
+    getEnv("AIRTABLE_TABLE_LEADS", { required: true }) || "ContactLeads",
   STRIPE_API_KEY: getEnv("STRIPE_API_KEY"),
   TOEFL_iBT_Voucher_ID: getEnv("TOEFL_iBT_Voucher_ID"),
   TOEFL_Ambassador_Activation_Pack_ID: getEnv(
@@ -50,8 +50,8 @@ export const env = {
   ),
   STRIPE_WEBHOOK_SECRET: getEnv("STRIPE_WEBHOOK_SECRET"),
   JWT_SECRET: getJwtSecret(),
-  EMAIL_API_KEY: getEnv("EMAIL_API_KEY"),
-  EMAIL_FROM: getEnv("EMAIL_FROM"),
+  RESEND_API_KEY: getEnv("RESEND_API_KEY"),
+  RESEND_FROM_EMAIL: getEnv("RESEND_FROM_EMAIL"),
   NEXT_PUBLIC_CALENDLY_STUDENT_URL: getEnv("NEXT_PUBLIC_CALENDLY_STUDENT_URL"),
   NEXT_PUBLIC_CALENDLY_CENTER_URL: getEnv("NEXT_PUBLIC_CALENDLY_CENTER_URL"),
   ADMIN_CONTACT_EMAIL: getEnv("ADMIN_CONTACT_EMAIL"),
