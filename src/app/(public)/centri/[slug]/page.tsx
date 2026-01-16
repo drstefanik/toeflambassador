@@ -171,7 +171,7 @@ export default async function CenterPage(props: PageProps) {
 
           {writeSectionEnabled ? (
             <CenterContactForm
-              centerSlug={slug}
+              centerSlug={center.slug}
               centerName={center.name}
             />
           ) : null}

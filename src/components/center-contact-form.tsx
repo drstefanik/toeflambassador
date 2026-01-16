@@ -13,22 +13,22 @@ export function CenterContactForm({ centerSlug, centerName }: Props) {
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    const fd = new FormData(e.currentTarget);
-    const payload = {
-      centerSlug,
-      name: String(fd.get("name") || ""),
-      mobile: String(fd.get("mobile") || ""),
-      email: String(fd.get("email") || ""),
-      subject: String(fd.get("subject") || ""),
-      message: String(fd.get("message") || ""),
-      company: String(fd.get("company") || ""),
-    };
-
     setLoading(true);
     setSent("idle");
 
     try {
+      const fd = new FormData(e.currentTarget);
+
+      const payload = {
+        centerSlug,
+        name: String(fd.get("name") || "").trim(),
+        mobile: String(fd.get("mobile") || "").trim(),
+        email: String(fd.get("email") || "").trim(),
+        subject: String(fd.get("subject") || "").trim(),
+        message: String(fd.get("message") || "").trim(),
+        company: String(fd.get("company") || "").trim(),
+      };
+
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -36,17 +36,23 @@ export function CenterContactForm({ centerSlug, centerName }: Props) {
       });
 
       let data: any = null;
-      try {
+      const ct = res.headers.get("content-type") || "";
+      if (ct.includes("application/json")) {
         data = await res.json();
-      } catch {}
+      } else {
+        const txt = await res.text();
+        data = { ok: res.ok, raw: txt };
+      }
 
       if (res.ok && data?.ok === true) {
         setSent("ok");
         e.currentTarget.reset();
-        return;
+      } else {
+        console.error("Contact form failed", { status: res.status, data });
+        setSent("error");
       }
-      setSent("error");
-    } catch {
+    } catch (err) {
+      console.error("Contact form exception", err);
       setSent("error");
     } finally {
       setLoading(false);
@@ -117,16 +123,16 @@ export function CenterContactForm({ centerSlug, centerName }: Props) {
           {loading ? "Invio..." : "Scrivi ora"}
         </button>
 
-        {sent === "ok" ? (
-          <p className="text-sm text-slate-600">
-            Messaggio inviato ✨
+        {sent === "error" && (
+          <p className="text-red-600 mt-3">
+            Errore durante l&apos;invio. Riprova o scrivi direttamente via email.
           </p>
-        ) : null}
-        {sent === "error" ? (
-          <p className="text-sm text-rose-600">
-            Errore durante l’invio. Riprova o scrivi direttamente via email.
+        )}
+        {sent === "ok" && (
+          <p className="text-green-600 mt-3">
+            Messaggio inviato correttamente. Ti ricontatteremo al più presto.
           </p>
-        ) : null}
+        )}
       </form>
     </div>
   );
