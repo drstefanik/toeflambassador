@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
   const company = String(payload.company || "").trim();
 
   if (company) {
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true }, { status: 200 });
   }
 
   if (!centerSlug || !name || !email || !subject || !message) {
@@ -182,7 +182,8 @@ export async function POST(request: NextRequest) {
   }
 
   return NextResponse.json(
-    leadWarning ? { ok: true, warning: leadWarning } : { ok: true }
+    leadWarning ? { ok: true, warning: leadWarning } : { ok: true },
+    { status: 200 }
   );
 }
 

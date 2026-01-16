@@ -46,9 +46,9 @@ export function CenterContactForm({ centerSlug, centerName, title, subtitle }: P
         data = null;
       }
 
-      console.debug("contact response", res.status, data);
+      console.debug("POST /api/contact", res.status, data);
 
-      if (res.ok && (data === null || data?.ok === true)) {
+      if (res.ok) {
         setSent("ok");
         setErrorMessage(null);
         e.currentTarget.reset();
