@@ -55,9 +55,8 @@ export default async function CenterPage(props: PageProps) {
 
   if (!center) return notFound();
 
-  const phone =
-    center.callSectionPhoneNumber || center.phone || undefined;
-  const phoneLabel = center.callSectionPhoneLabel || "Telefono";
+  const phone = center.phone || undefined;
+  const phoneLabel = "Telefono";
   const email = center.email || "";
   const address = center.address || "";
   const city = center.city || "";
@@ -69,7 +68,7 @@ export default async function CenterPage(props: PageProps) {
           `${address}, ${city}`
         )}`;
 
-  const mapEnabled = center.mapEnabled ?? true;
+  const mapEnabled = center.mapEnabled === true;
   const heroImageUrl = center.heroImageUrl ?? null;
   const callSectionEnabled = center.callSectionEnabled ?? true;
   const writeSectionEnabled = center.writeSectionEnabled ?? true;
@@ -173,6 +172,8 @@ export default async function CenterPage(props: PageProps) {
             <CenterContactForm
               centerSlug={center.slug}
               centerName={center.name}
+              title={center.writeSectionTitle}
+              subtitle={center.writeSectionSubtitle}
             />
           ) : null}
         </section>
