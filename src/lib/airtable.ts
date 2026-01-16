@@ -144,6 +144,7 @@ const ORDER_FIELDS = {
 const CONTACT_LEAD_FIELDS = {
   CenterSlug: "CenterSlug",
   CenterName: "CenterName",
+  Name: "Name",
   Email: "Email",
   Mobile: "Mobile",
   Subject: "Subject",
@@ -219,6 +220,7 @@ export interface OrderFields {
 export interface ContactLeadFields {
   CenterSlug?: string;
   CenterName?: string;
+  Name?: string;
   Email?: string;
   Mobile?: string;
   Subject?: string;
@@ -383,6 +385,7 @@ export async function createContactLead(fields: ContactLeadFields) {
   return createRecord<ContactLeadFields>(tables.contactLeads, {
     [CONTACT_LEAD_FIELDS.CenterSlug]: fields.CenterSlug,
     [CONTACT_LEAD_FIELDS.CenterName]: fields.CenterName,
+    [CONTACT_LEAD_FIELDS.Name]: fields.Name,
     [CONTACT_LEAD_FIELDS.Email]: fields.Email,
     [CONTACT_LEAD_FIELDS.Mobile]: fields.Mobile,
     [CONTACT_LEAD_FIELDS.Subject]: fields.Subject,

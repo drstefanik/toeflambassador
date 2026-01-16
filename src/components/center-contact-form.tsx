@@ -35,15 +35,17 @@ export function CenterContactForm({ centerSlug, centerName }: Props) {
         body: JSON.stringify(payload),
       });
 
-      const data = await res.json().catch(() => null);
+      let data: any = null;
+      try {
+        data = await res.json();
+      } catch {}
 
-      if (res.ok && data?.ok) {
+      if (res.ok && data?.ok === true) {
         setSent("ok");
         e.currentTarget.reset();
         return;
       }
-
-      throw new Error("api_not_available");
+      setSent("error");
     } catch {
       setSent("error");
     } finally {
