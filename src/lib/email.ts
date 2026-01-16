@@ -1,5 +1,4 @@
 import { Resend } from "resend";
-import type { CreateEmailOptions } from "resend";
 import { env } from "./config";
 
 export interface SendEmailOptions {
@@ -32,7 +31,7 @@ export async function sendEmail(options: SendEmailOptions) {
   const ccList = ccTrimmed ? [ccTrimmed] : undefined;
   const replyToTrimmed = (replyTo ?? "").trim();
 
-  const payload: CreateEmailOptions = {
+  const payload = {
     from,
     to: toList,
     ...(ccList ? { cc: ccList } : {}),
@@ -42,7 +41,7 @@ export async function sendEmail(options: SendEmailOptions) {
     ...(text ? { text } : {}),
   };
 
-  const response = await resend.emails.send(payload);
+  const response = await resend.emails.send(payload as any);
 
   if (response.error) {
     console.error("Failed to send email", response.error);
