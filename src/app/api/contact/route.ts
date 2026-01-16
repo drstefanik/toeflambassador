@@ -107,29 +107,40 @@ export async function POST(request: NextRequest) {
   }
 
   const userAgent = request.headers.get("user-agent") || "";
-  const timestamp = new Date().toISOString();
 
   let resendMessageId: string | undefined;
   let status: "sent" | "failed" = "sent";
 
   try {
+    const textContent = [
+      "Hai ricevuto un nuovo messaggio dal form TOEFL Ambassador.",
+      "",
+      `Centro: ${centerName}`,
+      "",
+      `Nome: ${name}`,
+      `Email: ${email}`,
+      `Mobile: ${mobile || "—"}`,
+      "",
+      `Oggetto: ${subject}`,
+      "",
+      "Messaggio:",
+      message,
+    ].join("\n");
+
     const emailResponse = await sendEmail({
       to: centerEmail,
       cc: env.CONTROL_CC_EMAIL || undefined,
       subject: `[TOEFL Ambassador] ${subject} — ${name}`,
       replyTo: email,
+      text: textContent,
       html: `
         <p>Hai ricevuto un nuovo messaggio dal form TOEFL Ambassador.</p>
         <p><strong>Centro:</strong> ${centerName}</p>
-        <p><strong>Slug:</strong> ${centerSlug}</p>
         <p><strong>Nome:</strong> ${name}</p>
         <p><strong>Email:</strong> ${email}</p>
         <p><strong>Mobile:</strong> ${mobile || "—"}</p>
         <p><strong>Oggetto:</strong> ${subject}</p>
         <p><strong>Messaggio:</strong><br/>${message.replace(/\n/g, "<br/>")}</p>
-        <p><strong>IP:</strong> ${ip}</p>
-        <p><strong>User Agent:</strong> ${userAgent}</p>
-        <p><strong>Timestamp:</strong> ${timestamp}</p>
       `,
     });
 
@@ -150,12 +161,11 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  let leadSaved = true;
-
   try {
     await createContactLead({
       CenterSlug: centerSlug,
       CenterName: centerName,
+      Name: name,
       Email: email,
       Mobile: mobile,
       Subject: subject,
@@ -166,11 +176,10 @@ export async function POST(request: NextRequest) {
       ResendMessageId: resendMessageId,
     });
   } catch (error) {
-    leadSaved = false;
     console.error("Airtable lead save failed", error);
   }
 
-  return NextResponse.json({ ok: true, leadSaved });
+  return NextResponse.json({ ok: true });
 }
 
 export async function GET() {
