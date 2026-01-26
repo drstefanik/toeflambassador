@@ -16,12 +16,13 @@ export function CenterContactForm({ centerSlug, centerName, title, subtitle }: P
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const form = e.currentTarget;
     setLoading(true);
     setSent("idle");
     setErrorMessage(null);
 
     try {
-      const fd = new FormData(e.currentTarget);
+      const fd = new FormData(form);
 
       const payload = {
         centerSlug,
@@ -41,8 +42,6 @@ export function CenterContactForm({ centerSlug, centerName, title, subtitle }: P
 
       const json = await res.json().catch(() => null);
 
-      console.log("contact submit:", { status: res.status, resOk: res.ok, json });
-
       if (!res.ok || !json?.ok) {
         const msg =
           json?.error?.message ||
@@ -53,7 +52,11 @@ export function CenterContactForm({ centerSlug, centerName, title, subtitle }: P
 
       setSent("ok");
       setErrorMessage(null);
-      e.currentTarget.reset();
+      try {
+        form?.reset?.();
+      } catch (err) {
+        console.warn("Form reset failed (ignored):", err);
+      }
     } catch (err) {
       console.error("Contact form exception", err);
       const message =
