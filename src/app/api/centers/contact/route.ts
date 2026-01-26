@@ -3,17 +3,43 @@ import { sendEmail } from "@/lib/email";
 import { getCenterBySlug } from "@/lib/repositories/centers";
 import { env } from "@/lib/config";
 
+function errorResponse(status: number, code: string, message: string) {
+  return NextResponse.json(
+    { ok: false, error: { code, message } },
+    { status }
+  );
+}
+
 export async function POST(request: NextRequest) {
+  let payload: {
+    centerSlug?: string;
+    name?: string;
+    email?: string;
+    subject?: string;
+    message?: string;
+  };
+
   try {
-    const { centerSlug, name, email, subject, message } = await request.json();
+    payload = await request.json();
+  } catch {
+    return errorResponse(400, "invalid_json", "Invalid JSON");
+  }
+
+  try {
+    const centerSlug = String(payload.centerSlug || "").trim();
+    const name = String(payload.name || "").trim();
+    const email = String(payload.email || "").trim();
+    const subject = String(payload.subject || "").trim();
+    const message = String(payload.message || "").trim();
+
     if (!centerSlug || !name || !email || !subject || !message) {
-      return NextResponse.json({ error: "Dati mancanti" }, { status: 400 });
+      return errorResponse(400, "missing_fields", "Dati mancanti");
     }
 
     const center = await getCenterBySlug(centerSlug);
     const targetEmail = center?.fields.ContactFormEmail || center?.fields.Email;
     if (!center || !targetEmail) {
-      return NextResponse.json({ error: "Centro non trovato" }, { status: 404 });
+      return errorResponse(404, "center_not_found", "Centro non trovato");
     }
 
     await sendEmail({
@@ -23,9 +49,9 @@ export async function POST(request: NextRequest) {
       html: `<p>Hai ricevuto un nuovo messaggio dal portale TOEFL Ambassador.</p><p><strong>Nome:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><p><strong>Messaggio:</strong><br/>${message}</p>`,
     });
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ ok: true }, { status: 200 });
   } catch (error) {
     console.error("centers contact", error);
-    return NextResponse.json({ error: "Impossibile inviare il messaggio" }, { status: 500 });
+    return errorResponse(500, "server_error", "Impossibile inviare il messaggio");
   }
 }
