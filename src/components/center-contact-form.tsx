@@ -39,33 +39,28 @@ export function CenterContactForm({ centerSlug, centerName, title, subtitle }: P
         body: JSON.stringify(payload),
       });
 
-      let data: any = null;
-      try {
-        data = await res.json();
-      } catch {
-        data = null;
+      const json = await res.json().catch(() => null);
+
+      console.log("contact submit:", { status: res.status, resOk: res.ok, json });
+
+      if (!res.ok || !json?.ok) {
+        const msg =
+          json?.error?.message ||
+          json?.error ||
+          `HTTP ${res.status}`;
+        throw new Error(msg);
       }
 
-      console.debug("POST /api/contact", res.status, data);
-
-      if (res.ok) {
-        setSent("ok");
-        setErrorMessage(null);
-        e.currentTarget.reset();
-      } else {
-        console.error("Contact form failed", {
-          status: res.status,
-          error: data?.error,
-          data,
-        });
-        setErrorMessage(
-          data?.error || "Errore durante l'invio. Riprova o scrivi direttamente via email."
-        );
-        setSent("error");
-      }
+      setSent("ok");
+      setErrorMessage(null);
+      e.currentTarget.reset();
     } catch (err) {
       console.error("Contact form exception", err);
-      setErrorMessage("Errore durante l'invio. Riprova o scrivi direttamente via email.");
+      const message =
+        err instanceof Error && err.message
+          ? err.message
+          : "Errore durante l'invio. Riprova o scrivi direttamente via email.";
+      setErrorMessage(message);
       setSent("error");
     } finally {
       setLoading(false);
