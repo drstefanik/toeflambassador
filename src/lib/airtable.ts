@@ -459,9 +459,35 @@ export async function getCenterOTPByCode(code: string) {
     return null;
   }
 
-  return fetchFirst<CenterOTPFields>(tables.centerOtps, {
-    filterByFormula: `{${CENTER_OTP_FIELDS.Code}}='${escapeFormulaValue(normalizedCode)}'`,
-  });
+  try {
+    return await fetchFirst<CenterOTPFields>(tables.centerOtps, {
+      filterByFormula: `{${CENTER_OTP_FIELDS.Code}}='${escapeFormulaValue(normalizedCode)}'`,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    const isInvalidFormula =
+      message.includes("INVALID_FILTER_BY_FORMULA") &&
+      message.toLowerCase().includes("unknown field names");
+
+    if (!isInvalidFormula) {
+      throw error;
+    }
+
+    const records = await fetchAll<CenterOTPFields>(tables.centerOtps);
+
+    return (
+      records.find((record) => {
+        const fields = record.fields as Record<string, unknown>;
+        const candidates = [
+          fields[CENTER_OTP_FIELDS.Code],
+          fields.code,
+          fields.CODICE,
+          fields.Codice,
+        ];
+        return candidates.some((candidate) => String(candidate ?? "").trim() === normalizedCode);
+      }) ?? null
+    );
+  }
 }
 
 export async function updateCenterOTP(otpId: string, fields: Partial<CenterOTPFields>) {
