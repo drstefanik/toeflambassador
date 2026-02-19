@@ -33,7 +33,15 @@ export default async function CenterDashboardPage() {
             Acquista il kit di attivazione per ricevere materiali promozionali, formazione e accesso prioritario agli studenti.
           </p>
           <div className="mt-6">
-            <CheckoutButton endpoint="/api/checkout/center-kit" label="Acquista il pack" />
+            <CheckoutButton
+              endpoint="/api/stripe/checkout"
+              label="Acquista il pack"
+              payload={{
+                type: "ACTIVATION_PACK",
+                centerUserEmail: user.email,
+              }}
+              className="w-full rounded-full bg-slate-900 px-6 py-3 font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
+            />
           </div>
         </section>
         <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">

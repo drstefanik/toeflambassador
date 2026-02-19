@@ -5,9 +5,11 @@ import { useState } from "react";
 interface Props {
   endpoint: string;
   label: string;
+  payload?: Record<string, string>;
+  className?: string;
 }
 
-export function CheckoutButton({ endpoint, label }: Props) {
+export function CheckoutButton({ endpoint, label, payload, className }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -15,7 +17,13 @@ export function CheckoutButton({ endpoint, label }: Props) {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(endpoint, { method: "POST" });
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload ?? {}),
+      });
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data.error ?? "Errore inatteso");
@@ -35,7 +43,10 @@ export function CheckoutButton({ endpoint, label }: Props) {
       <button
         onClick={handleClick}
         disabled={loading}
-        className="w-full rounded-full bg-sky-600 px-6 py-3 font-semibold text-white hover:bg-sky-700 disabled:opacity-60"
+        className={
+          className ??
+          "w-full rounded-full bg-sky-600 px-6 py-3 font-semibold text-white hover:bg-sky-700 disabled:opacity-60"
+        }
       >
         {loading ? "Reindirizzamento in corso..." : label}
       </button>
