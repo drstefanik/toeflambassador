@@ -17,7 +17,21 @@ const mapCenterOtp = (record: AirtableRecord<CenterOTPFields>): CenterOtpEntity 
 
 export async function findActiveCenterOtpByCode(otp: string) {
   const record = await getCenterOTPByCode(otp);
-  return record ? mapCenterOtp(record) : null;
+  if (!record) {
+    return null;
+  }
+
+  const status = String(record.fields.Status ?? "").trim().toLowerCase();
+  const isUsed =
+    record.fields.Used === true ||
+    record.fields.Utilizzato === true ||
+    status === "used";
+
+  if (isUsed) {
+    return null;
+  }
+
+  return mapCenterOtp(record);
 }
 
 export async function markCenterOtpUsed(
