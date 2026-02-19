@@ -119,7 +119,7 @@ const STUDENT_FIELDS = {
 };
 
 const CENTER_OTP_FIELDS = {
-  Code: "Code",
+  Code: "OTP",
   ExpiresAt: "ExpiresAt",
   Status: "Status",
   UsedAt: "UsedAt",
@@ -128,6 +128,16 @@ const CENTER_OTP_FIELDS = {
   Email: "Email",
   Center: "Center",
 };
+
+const CENTER_OTP_CODE_FIELD_CANDIDATES = [
+  CENTER_OTP_FIELDS.Code,
+  "Code",
+  "code",
+  "CODICE",
+  "Codice",
+  "Otp",
+  "otp",
+];
 
 const ORDER_FIELDS = {
   StripeSessionId: "StripeSessionId",
@@ -195,6 +205,7 @@ export interface StudentFields {
 }
 
 export interface CenterOTPFields {
+  OTP?: string;
   Code?: string;
   ExpiresAt?: string;
   Status?: string;
@@ -459,35 +470,39 @@ export async function getCenterOTPByCode(code: string) {
     return null;
   }
 
-  try {
-    return await fetchFirst<CenterOTPFields>(tables.centerOtps, {
-      filterByFormula: `{${CENTER_OTP_FIELDS.Code}}='${escapeFormulaValue(normalizedCode)}'`,
-    });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    const isInvalidFormula =
-      message.includes("INVALID_FILTER_BY_FORMULA") &&
-      message.toLowerCase().includes("unknown field names");
+  const escapedCode = escapeFormulaValue(normalizedCode);
 
-    if (!isInvalidFormula) {
-      throw error;
+  for (const fieldName of CENTER_OTP_CODE_FIELD_CANDIDATES) {
+    try {
+      const record = await fetchFirst<CenterOTPFields>(tables.centerOtps, {
+        filterByFormula: `{${fieldName}}='${escapedCode}'`,
+      });
+
+      if (record) {
+        return record;
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      const isUnknownField =
+        message.includes("INVALID_FILTER_BY_FORMULA") &&
+        message.toLowerCase().includes("unknown field names");
+
+      if (!isUnknownField) {
+        throw error;
+      }
     }
-
-    const records = await fetchAll<CenterOTPFields>(tables.centerOtps);
-
-    return (
-      records.find((record) => {
-        const fields = record.fields as Record<string, unknown>;
-        const candidates = [
-          fields[CENTER_OTP_FIELDS.Code],
-          fields.code,
-          fields.CODICE,
-          fields.Codice,
-        ];
-        return candidates.some((candidate) => String(candidate ?? "").trim() === normalizedCode);
-      }) ?? null
-    );
   }
+
+  const records = await fetchAll<CenterOTPFields>(tables.centerOtps);
+
+  return (
+    records.find((record) => {
+      const fields = record.fields as Record<string, unknown>;
+      return CENTER_OTP_CODE_FIELD_CANDIDATES.some(
+        (fieldName) => String(fields[fieldName] ?? "").trim() === normalizedCode
+      );
+    }) ?? null
+  );
 }
 
 export async function updateCenterOTP(otpId: string, fields: Partial<CenterOTPFields>) {
