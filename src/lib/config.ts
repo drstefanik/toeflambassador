@@ -35,7 +35,10 @@ export const env = {
   AIRTABLE_API_KEY: getEnv("AIRTABLE_API_KEY"),
   AIRTABLE_PERSONAL_TOKEN: getEnv("AIRTABLE_PERSONAL_TOKEN"),
   AIRTABLE_BASE_ID: getEnv("AIRTABLE_BASE_ID"),
-  AIRTABLE_TABLE_CENTERS: getEnv("AIRTABLE_TABLE_CENTERS", { required: true }) || "Centers",
+  AIRTABLE_TABLE_CENTERS:
+    getEnv("AIRTABLE_CENTERS_TABLE") ||
+    getEnv("AIRTABLE_TABLE_CENTERS", { required: true }) ||
+    "Centers",
   AIRTABLE_TABLE_CENTER_USERS:
     getEnv("AIRTABLE_TABLE_CENTER_USERS", { required: true }) || "CenterUsers",
   AIRTABLE_TABLE_CENTER_OTPS:
