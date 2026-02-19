@@ -12,6 +12,9 @@ export default async function CenterDashboardPage() {
   }
 
   const center = await getCenterById(user.centerId);
+  if (!center) {
+    redirect("/login-center");
+  }
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-16">
@@ -23,15 +26,20 @@ export default async function CenterDashboardPage() {
           <h1 className="mt-4 text-4xl font-bold text-slate-900">{center.name}</h1>
           {center.city && <p className="text-slate-600">{center.city}</p>}
         </div>
+
         <LogoutButton className="rounded-full border border-slate-200 px-5 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-60" />
       </div>
 
       <div className="mt-10 grid gap-8 md:grid-cols-2">
         <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-2xl font-semibold text-slate-900">TOEFL Ambassador Activation Pack</h2>
+          <h2 className="text-2xl font-semibold text-slate-900">
+            TOEFL Ambassador Activation Pack
+          </h2>
           <p className="mt-2 text-slate-600">
-            Acquista il kit di attivazione per ricevere materiali promozionali, formazione e accesso prioritario agli studenti.
+            Acquista il kit di attivazione per ricevere materiali promozionali,
+            formazione e accesso prioritario agli studenti.
           </p>
+
           <div className="mt-6">
             <CheckoutButton
               endpoint="/api/stripe/checkout"
@@ -40,20 +48,28 @@ export default async function CenterDashboardPage() {
                 type: "ACTIVATION_PACK",
                 centerUserEmail: user.email,
               }}
-              className="w-full rounded-full bg-slate-900 px-6 py-3 font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
+              className="w-full rounded-full bg-slate-900 px-6 py-3 font-semibold text-white transition hover:bg-slate-800 disabled:opacity-60"
             />
           </div>
         </section>
+
         <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-2xl font-semibold text-slate-900">Gestisci la tua pagina pubblica</h2>
+          <h2 className="text-2xl font-semibold text-slate-900">
+            Gestisci la tua pagina pubblica
+          </h2>
           <p className="mt-2 text-slate-600">
-            Aggiorna immagini, call-to-action e informazioni di contatto mostrate su toeflambassador.com/centri/{center.slug}.
+            Aggiorna immagini, call-to-action e informazioni di contatto mostrate su{" "}
+            <span className="rounded bg-slate-50 px-2 py-0.5 font-mono text-sm text-slate-700">
+              toeflambassador.com/centri/{center.slug}
+            </span>
+            .
           </p>
+
           <Link
             href="/center/page-settings"
-            className="mt-6 inline-flex rounded-full bg-slate-900 px-6 py-3 font-semibold text-white"
+            className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-slate-900 px-6 py-3 font-semibold text-white transition hover:bg-slate-800"
           >
-            Modifica la pagina
+            Gestisci la pagina
           </Link>
         </section>
       </div>
