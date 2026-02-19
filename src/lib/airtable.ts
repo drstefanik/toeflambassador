@@ -23,12 +23,13 @@ const AIRTABLE_BASE_URL = env.AIRTABLE_BASE_ID
 const escapeFormulaValue = (value: string) => value.replace(/'/g, "\\'");
 
 const withAuthHeaders = () => {
-  if (!env.AIRTABLE_PERSONAL_TOKEN) {
-    throw new Error("Missing AIRTABLE_PERSONAL_TOKEN");
+  const apiKey = env.AIRTABLE_API_KEY || env.AIRTABLE_PERSONAL_TOKEN;
+  if (!apiKey) {
+    throw new Error("Missing AIRTABLE_API_KEY");
   }
 
   return {
-    Authorization: `Bearer ${env.AIRTABLE_PERSONAL_TOKEN}`,
+    Authorization: `Bearer ${apiKey}`,
     "Content-Type": "application/json",
   };
 };
@@ -144,6 +145,10 @@ const ORDER_FIELDS = {
   StripePaymentIntentId: "StripePaymentIntentId",
   Status: "Status",
   Type: "Type",
+  CenterUserEmail: "CenterUserEmail",
+  StudentEmail: "StudentEmail",
+  CreatedAt: "CreatedAt",
+  Amount: "Amount",
   CenterUser: "CenterUser",
   Center: "Center",
   Student: "Student",
@@ -221,6 +226,10 @@ export interface OrderFields {
   StripePaymentIntentId?: string;
   Status?: string;
   Type?: string;
+  CenterUserEmail?: string;
+  StudentEmail?: string;
+  CreatedAt?: string;
+  Amount?: number;
   CenterUser?: string[];
   Center?: string[];
   Student?: string[];
@@ -510,7 +519,32 @@ export async function updateCenterOTP(otpId: string, fields: Partial<CenterOTPFi
 }
 
 export async function createOrder(fields: OrderFields) {
-  return createRecord<OrderFields>(tables.orders, fields);
+  try {
+    return await createRecord<OrderFields>(tables.orders, fields);
+  } catch (error) {
+    console.error("[airtable.createOrder] Failed to create order", { fields, error });
+    throw error;
+  }
+}
+
+export async function findOrderBySessionId(sessionId: string) {
+  try {
+    return await fetchFirst<OrderFields>(tables.orders, {
+      filterByFormula: `({${ORDER_FIELDS.StripeSessionId}}='${escapeFormulaValue(sessionId)}')`,
+    });
+  } catch (error) {
+    console.error("[airtable.findOrderBySessionId] Failed", { sessionId, error });
+    throw new Error("Unable to find order by Stripe session id");
+  }
+}
+
+export async function updateOrder(recordId: string, fields: Partial<OrderFields>) {
+  try {
+    return await updateRecord<OrderFields>(tables.orders, recordId, fields);
+  } catch (error) {
+    console.error("[airtable.updateOrder] Failed", { recordId, fields, error });
+    throw new Error("Unable to update Airtable order");
+  }
 }
 
 export async function updateOrderByStripeSessionId(
