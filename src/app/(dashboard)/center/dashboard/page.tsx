@@ -36,8 +36,7 @@ export default async function CenterDashboardPage() {
             TOEFL Ambassador Activation Pack
           </h2>
           <p className="mt-2 text-slate-600">
-            Acquista il kit di attivazione per ricevere materiali promozionali,
-            formazione e accesso prioritario agli studenti.
+            Acquista il kit di attivazione per ricevere materiali promozionali, formazione e accesso prioritario agli studenti.
           </p>
 
           <div className="mt-6">
@@ -67,7 +66,7 @@ export default async function CenterDashboardPage() {
 
           <Link
             href="/center/page-settings"
-            className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-slate-900 px-6 py-3 font-semibold text-white transition hover:bg-slate-800"
+            className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-slate-900 px-6 py-3 font-semibold !text-white hover:!text-white transition hover:bg-slate-800"
           >
             Gestisci la pagina
           </Link>
