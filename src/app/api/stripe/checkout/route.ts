@@ -1,62 +1,69 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createOrder } from "@/lib/airtable";
+import { getUserFromRequest } from "@/lib/auth";
 import { env } from "@/lib/config";
 import { stripe } from "@/lib/stripe";
 
-type CheckoutType = "ACTIVATION_PACK" | "IBT_VOUCHER";
-
 interface CheckoutPayload {
-  type: CheckoutType;
-  centerUserEmail?: string;
+  type: "ACTIVATION_PACK";
   studentEmail?: string;
 }
 
 const FALLBACK_URL = env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
-const getPriceIdByType = (type: CheckoutType) => {
-  if (type === "ACTIVATION_PACK") {
-    return env.TOEFL_Ambassador_Activation_Pack_PRICE_ID;
-  }
-
-  return env.TOEFL_iBT_Voucher_PRICE_ID;
-};
-
 export async function POST(request: NextRequest) {
   try {
     const payload = (await request.json()) as CheckoutPayload;
-    const type = payload?.type;
-
-    if (type !== "ACTIVATION_PACK" && type !== "IBT_VOUCHER") {
+    if (payload?.type !== "ACTIVATION_PACK") {
       return NextResponse.json({ error: "Invalid checkout type" }, { status: 400 });
     }
 
-    const priceId = getPriceIdByType(type);
-    if (!priceId) {
-      return NextResponse.json({ error: `Missing Stripe price id for ${type}` }, { status: 500 });
+    if (!env.TOEFL_Ambassador_Activation_Pack_PRICE_ID) {
+      return NextResponse.json({ error: "Missing Stripe price id for ACTIVATION_PACK" }, { status: 500 });
     }
+
+    const user = await getUserFromRequest(request);
+    if (!user || user.role !== "center") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const centerUserEmail = user.email;
+    const centerUserId = user.centerUserId;
+    const centerId = user.centerId;
+    const studentEmail = payload.studentEmail?.trim() || "";
 
     const origin = request.headers.get("origin") ?? FALLBACK_URL;
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
-      line_items: [{ price: priceId, quantity: 1 }],
+      line_items: [{ price: env.TOEFL_Ambassador_Activation_Pack_PRICE_ID, quantity: 1 }],
       success_url: `${origin}?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}?canceled=1`,
       metadata: {
-        type,
-        centerUserEmail: payload.centerUserEmail ?? "",
-        studentEmail: payload.studentEmail ?? "",
+        type: "ACTIVATION_PACK",
+        centerId,
+        centerUserId,
+        centerUserEmail,
+        studentEmail,
       },
-      customer_email: payload.centerUserEmail || payload.studentEmail,
+      customer_email: centerUserEmail,
     });
 
-    await createOrder({
-      Status: "CREATED",
-      StripeSessionId: session.id,
-      Type: type,
-      CenterUserEmail: payload.centerUserEmail,
-      StudentEmail: payload.studentEmail,
-      CreatedAt: new Date().toISOString(),
-    });
+    try {
+      await createOrder({
+        Status: "CREATED",
+        StripeSessionId: session.id,
+        CenterUserEmail: centerUserEmail,
+        CenterId: centerId,
+        CenterUserId: centerUserId,
+        StudentEmail: studentEmail || undefined,
+        CreatedAt: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error("[stripe.checkout] Failed to create Airtable order (continuing)", {
+        stripeSessionId: session.id,
+        error,
+      });
+    }
 
     return NextResponse.json({ url: session.url });
   } catch (error) {

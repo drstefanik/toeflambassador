@@ -102,6 +102,9 @@ const CENTER_FIELDS = {
   ContactFormEmail: "ContactFormEmail",
   MapEnabled: "MapEnabled",
   AdminEmail: "AdminEmail",
+  ActivationPackStatus: "ActivationPackStatus",
+  ActivationPackPaidAt: "ActivationPackPaidAt",
+  ActivationPackOrderSessionId: "ActivationPackOrderSessionId",
 };
 
 const CENTER_USER_FIELDS = {
@@ -146,6 +149,8 @@ const ORDER_FIELDS = {
   Status: "Status",
   Type: "Type",
   CenterUserEmail: "CenterUserEmail",
+  CenterId: "CenterId",
+  CenterUserId: "CenterUserId",
   StudentEmail: "StudentEmail",
   CreatedAt: "CreatedAt",
   Amount: "Amount",
@@ -192,6 +197,9 @@ export interface CenterFields {
   ContactFormEmail?: string;
   MapEnabled?: boolean;
   AdminEmail?: string;
+  ActivationPackStatus?: "INACTIVE" | "ACTIVE";
+  ActivationPackPaidAt?: string;
+  ActivationPackOrderSessionId?: string;
 }
 
 export interface CenterUserFields {
@@ -227,6 +235,8 @@ export interface OrderFields {
   Status?: string;
   Type?: string;
   CenterUserEmail?: string;
+  CenterId?: string;
+  CenterUserId?: string;
   StudentEmail?: string;
   CreatedAt?: string;
   Amount?: number;
