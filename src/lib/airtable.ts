@@ -70,6 +70,12 @@ export async function airtableRequest<T>(
 
   if (!response.ok) {
     const error = await response.text();
+    console.error("[airtableRequest] request failed", {
+      tableName,
+      method,
+      status: response.status,
+      error,
+    });
     throw new Error(`Airtable request failed: ${error}`);
   }
 
@@ -363,7 +369,9 @@ async function fetchFirst<TFields>(tableName: string, params?: QueryParams) {
 }
 
 async function createRecord<TFields>(tableName: string, fields: Partial<TFields>) {
-  const safeFields = removeUndefinedFields(fields as Record<string, unknown>);
+  const safeFields = removeUndefinedFields(
+    { StripeSessionId: sessionId, ...fields } as Record<string, unknown>
+  );
   const data = await airtableRequest<AirtableListResponse<TFields>>(
     tableName,
     "POST",
@@ -385,7 +393,9 @@ async function updateRecord<TFields>(
   recordId: string,
   fields: Partial<TFields>
 ) {
-  const safeFields = removeUndefinedFields(fields as Record<string, unknown>);
+  const safeFields = removeUndefinedFields(
+    { StripeSessionId: sessionId, ...fields } as Record<string, unknown>
+  );
   return airtableRequest<AirtableRecord<TFields>>(
     `${tableName}/${recordId}`,
     "PATCH",
@@ -393,9 +403,20 @@ async function updateRecord<TFields>(
   );
 }
 
-export async function findOrdersByCenter(centerId: string, centerUserId: string) {
-  const formula = `OR({CenterId}="${centerId}",{CenterUserId}="${centerUserId}")`;
-  const url = buildUrl(ORDERS_TABLE, { filterByFormula: formula });
+export async function findOrdersByCenter(
+  centerId: string,
+  centerUserId: string,
+  centerUserEmail: string
+) {
+  const formula = `OR({CenterId}="${escapeFormulaValue(centerId)}",{CenterUserId}="${escapeFormulaValue(
+    centerUserId
+  )}",{CenterUserEmail}="${escapeFormulaValue(centerUserEmail)}")`;
+  const url = buildUrl(ORDERS_TABLE, {
+    filterByFormula: formula,
+    "sort[0][field]": ORDER_FIELDS.CreatedAt,
+    "sort[0][direction]": "desc",
+    pageSize: 50,
+  });
   const response = await airtableFetch(url);
   return Array.isArray(response?.records) ? response.records : [];
 }
@@ -404,9 +425,11 @@ export async function upsertOrderBySession(
   sessionId: string,
   fields: Partial<OrderFields>
 ) {
-  const formula = `{StripeSessionId}="${sessionId}"`;
+  const formula = `{StripeSessionId}="${escapeFormulaValue(sessionId)}"`;
   const searchUrl = buildUrl(ORDERS_TABLE, { filterByFormula: formula });
-  const safeFields = removeUndefinedFields(fields as Record<string, unknown>);
+  const safeFields = removeUndefinedFields(
+    { StripeSessionId: sessionId, ...fields } as Record<string, unknown>
+  );
 
   const search = await airtableFetch(searchUrl);
   if (search.records.length > 0) {

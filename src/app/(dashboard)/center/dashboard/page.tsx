@@ -1,10 +1,14 @@
 import Link from "next/link";
+import { unstable_noStore as noStore } from "next/cache";
 import { CheckoutButton } from "@/components/checkout-button";
 import { LogoutButton } from "@/components/logout-button";
 import { getUserFromRequest } from "@/lib/auth";
 import { findOrdersByCenter } from "@/lib/airtable";
 import { getCenterById } from "@/lib/repositories/centers";
 import { redirect } from "next/navigation";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 interface DashboardOrder {
   CreatedAt?: string;
@@ -29,6 +33,7 @@ const formatAmount = (amount: number | null | undefined) => {
 };
 
 export default async function CenterDashboardPage() {
+  noStore();
   const user = await getUserFromRequest();
   if (!user || user.role !== "center") {
     redirect("/login-center");
@@ -41,7 +46,7 @@ export default async function CenterDashboardPage() {
 
   let orders: DashboardOrder[] = [];
   try {
-    const fetchedOrders = await findOrdersByCenter(user.centerId, user.centerUserId);
+    const fetchedOrders = await findOrdersByCenter(user.centerId, user.centerUserId, user.email);
     orders = fetchedOrders.map((record: { fields?: DashboardOrder }) => record.fields ?? {});
   } catch (err) {
     console.error("[dashboard] orders fetch failed", err);
