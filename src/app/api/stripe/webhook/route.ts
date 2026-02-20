@@ -2,6 +2,15 @@ import Stripe from "stripe";
 import { NextResponse } from "next/server";
 import { upsertOrderBySession, activateCenter } from "@/lib/airtable";
 
+const ALLOWED_STATUS_VALUES = new Set(["CREATED", "PAID", "EXPIRED"]);
+
+class AirtableWebhookError extends Error {
+  constructor(message: string, options?: { cause?: unknown }) {
+    super(message, options);
+    this.name = "AirtableWebhookError";
+  }
+}
+
 function getStripeClient() {
   const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
   if (!stripeSecretKey) {
@@ -11,6 +20,18 @@ function getStripeClient() {
   return new Stripe(stripeSecretKey, {
     apiVersion: "2024-12-18.acacia" as Stripe.LatestApiVersion,
   });
+}
+
+function normalizeTypeValue(type: string | undefined) {
+  if (!type) {
+    return undefined;
+  }
+
+  return type === "ACTIVATION_PACK" ? "ACTIVATION PACK" : type;
+}
+
+function normalizeStatusValue(status: string) {
+  return ALLOWED_STATUS_VALUES.has(status) ? status : "CREATED";
 }
 
 export async function POST(req: Request) {
@@ -39,20 +60,29 @@ export async function POST(req: Request) {
       const currency = (session.currency ?? "eur").toUpperCase();
       const meta = session.metadata || {};
       const centerId = meta.centerId || "";
+      const typeValue = normalizeTypeValue(meta.type);
+      const statusValue = normalizeStatusValue("PAID");
 
-      await upsertOrderBySession(sessionId, {
-        StripeSessionId: sessionId,
-        Status: "PAID",
-        Amount: amount,
-        Currency: currency,
-        Type: meta.type || undefined,
-        CenterId: meta.centerId || undefined,
-        CenterUserId: meta.centerUserId || undefined,
-        CenterUserEmail: meta.centerUserEmail || undefined,
-      });
+      console.log("[webhook] metadata", session.metadata);
 
-      if (centerId) {
-        await activateCenter(centerId, sessionId);
+      try {
+        await upsertOrderBySession(sessionId, {
+          StripeSessionId: sessionId,
+          Status: statusValue,
+          Amount: amount,
+          Currency: currency,
+          Type: typeValue,
+          CenterId: meta.centerId || undefined,
+          CenterUserId: meta.centerUserId || undefined,
+          CenterUserEmail: meta.centerUserEmail || undefined,
+        });
+
+        if (centerId) {
+          await activateCenter(centerId, sessionId);
+        }
+      } catch (error) {
+        console.error("[webhook] airtable update failed", error);
+        throw new AirtableWebhookError("Airtable update failed", { cause: error });
       }
 
       console.log("[webhook] completed", {
@@ -65,14 +95,26 @@ export async function POST(req: Request) {
 
     if (event.type === "checkout.session.expired") {
       const session = event.data.object as Stripe.Checkout.Session;
-      await upsertOrderBySession(session.id, { Status: "EXPIRED" });
+
+      try {
+        await upsertOrderBySession(session.id, { Status: normalizeStatusValue("EXPIRED") });
+      } catch (error) {
+        console.error("[webhook] airtable update failed", error);
+        throw new AirtableWebhookError("Airtable update failed", { cause: error });
+      }
+
       console.log("[stripe.webhook] checkout.session.expired", { sessionId: session.id });
     }
 
     return NextResponse.json({ received: true }, { status: 200 });
   } catch (err) {
-    // DO NOT return redirects. Still respond 200 to Stripe to stop retries if signature fails in prod.
     console.error("[stripe.webhook] ERROR", err);
+
+    if (err instanceof AirtableWebhookError) {
+      return NextResponse.json({ error: "airtable failed" }, { status: 500 });
+    }
+
+    // Keep 200 for non-Airtable failures to avoid unnecessary Stripe retries.
     return NextResponse.json({ received: true }, { status: 200 });
   }
 }
