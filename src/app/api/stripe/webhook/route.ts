@@ -1,99 +1,116 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import Stripe from "stripe";
 import { createOrder, findOrderBySessionId, updateCenterFields, updateOrder } from "@/lib/airtable";
-import { env } from "@/lib/config";
 import { stripe } from "@/lib/stripe";
 
-const toAmount = (amountTotal: number | null) =>
-  typeof amountTotal === "number" ? Number((amountTotal / 100).toFixed(2)) : undefined;
+async function upsertPaidOrder(params: {
+  sessionId: string;
+  amountTotal: number;
+  currency: string;
+  paymentIntent: string | null;
+  centerId?: string;
+  centerUserId?: string;
+  centerUserEmail?: string;
+}) {
+  const {
+    sessionId,
+    amountTotal,
+    currency,
+    paymentIntent,
+    centerId,
+    centerUserId,
+    centerUserEmail,
+  } = params;
 
-const toCurrency = (currency: string | null) =>
-  typeof currency === "string" ? currency.toUpperCase() : undefined;
+  try {
+    const existing = await findOrderBySessionId(sessionId);
 
-async function upsertOrderFromCheckoutSession(
-  session: Stripe.Checkout.Session,
-  status: "PAID" | "EXPIRED" | "FAILED" | "CANCELED"
-) {
-  const metadata = session.metadata ?? {};
-  const fields = {
-    Status: status,
-    StripeSessionId: session.id,
-    StripePaymentIntentId:
-      typeof session.payment_intent === "string" ? session.payment_intent : undefined,
-    Amount: toAmount(session.amount_total),
-    Currency: toCurrency(session.currency),
-    Type: metadata.type || undefined,
-    CenterUserEmail: metadata.centerUserEmail || undefined,
-    CenterId: metadata.centerId || undefined,
-    CenterUserId: metadata.centerUserId || undefined,
-    StudentEmail: metadata.studentEmail || undefined,
-    CreatedAt: new Date().toISOString(),
-  };
+    if (existing) {
+      await updateOrder(existing.id, {
+        Status: "PAID",
+        Amount: Number((amountTotal / 100).toFixed(2)),
+        Currency: currency,
+        StripePaymentIntentId: paymentIntent ?? undefined,
+      });
+      return;
+    }
 
-  const existing = await findOrderBySessionId(session.id);
-  if (existing) {
-    await updateOrder(existing.id, fields);
+    await createOrder({
+      Status: "PAID",
+      StripeSessionId: sessionId,
+      StripePaymentIntentId: paymentIntent ?? undefined,
+      Amount: Number((amountTotal / 100).toFixed(2)),
+      Currency: currency,
+      CenterId: centerId,
+      CenterUserId: centerUserId,
+      CenterUserEmail: centerUserEmail,
+      CreatedAt: new Date().toISOString(),
+    });
+  } catch (err) {
+    console.error("[airtable] order upsert failed", err);
+  }
+}
+
+async function activateCenter(centerId: string | undefined, sessionId: string) {
+  if (!centerId) {
     return;
   }
 
-  await createOrder(fields);
+  try {
+    await updateCenterFields(centerId, {
+      ActivationPackStatus: "ACTIVE",
+      ActivationPackPaidAt: new Date().toISOString(),
+      ActivationPackOrderSessionId: sessionId,
+    });
+  } catch (err) {
+    console.error("[airtable] center activation update failed", err);
+  }
 }
 
-async function maybeActivateCenter(session: Stripe.Checkout.Session) {
-  const metadata = session.metadata ?? {};
-  if (metadata.type !== "ACTIVATION_PACK" || !metadata.centerId) {
-    return;
+export async function POST(req: NextRequest) {
+  const body = await req.text();
+  const sig = req.headers.get("stripe-signature");
+
+  if (!sig || !process.env.STRIPE_WEBHOOK_SECRET) {
+    return Response.json({ error: "Webhook not configured" }, { status: 400 });
   }
 
-  await updateCenterFields(metadata.centerId, {
-    ActivationPackStatus: "ACTIVE",
-    ActivationPackPaidAt: new Date().toISOString(),
-    ActivationPackOrderSessionId: session.id,
-  });
-}
-
-export async function POST(request: NextRequest) {
-  const signature = request.headers.get("stripe-signature");
-  if (!signature || !env.STRIPE_WEBHOOK_SECRET) {
-    return NextResponse.json({ error: "Webhook not configured" }, { status: 400 });
-  }
-
-  const body = await request.text();
   let event: Stripe.Event;
 
   try {
-    event = stripe.webhooks.constructEvent(body, signature, env.STRIPE_WEBHOOK_SECRET);
-  } catch (error) {
-    console.error("[stripe.webhook] Invalid signature", error);
-    return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
+    event = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+  } catch (err) {
+    console.error("[stripe.webhook] invalid signature", err);
+    return Response.json({ error: "Invalid signature" }, { status: 400 });
   }
 
-  try {
-    if (event.type === "checkout.session.completed") {
-      const session = event.data.object as Stripe.Checkout.Session;
-      await upsertOrderFromCheckoutSession(session, "PAID");
-      await maybeActivateCenter(session);
-    }
+  if (event.type === "checkout.session.completed") {
+    const session = event.data.object as Stripe.Checkout.Session;
 
-    if (event.type === "checkout.session.expired") {
-      const session = event.data.object as Stripe.Checkout.Session;
-      await upsertOrderFromCheckoutSession(session, "EXPIRED");
-    }
+    const sessionId = session.id;
+    const amountTotal = session.amount_total ?? 0;
+    const currency = (session.currency ?? "eur").toUpperCase();
+    const paymentIntent = typeof session.payment_intent === "string" ? session.payment_intent : null;
 
-    if (event.type === "checkout.session.async_payment_failed") {
-      const session = event.data.object as Stripe.Checkout.Session;
-      await upsertOrderFromCheckoutSession(session, "FAILED");
-    }
+    const meta = session.metadata || {};
+    const centerId = meta.centerId;
+    const centerUserId = meta.centerUserId;
+    const centerUserEmail = meta.centerUserEmail;
 
-    if (event.type === "checkout.session.async_payment_succeeded") {
-      const session = event.data.object as Stripe.Checkout.Session;
-      await upsertOrderFromCheckoutSession(session, "PAID");
-      await maybeActivateCenter(session);
-    }
+    console.log("[stripe.webhook] completed", { sessionId, centerId, amountTotal, currency });
 
-    return NextResponse.json({ received: true });
-  } catch (error) {
-    console.error("[stripe.webhook] Handler failure", { type: event.type, error });
-    return NextResponse.json({ error: "Webhook handling failed" }, { status: 500 });
+    await upsertPaidOrder({
+      sessionId,
+      amountTotal,
+      currency,
+      paymentIntent,
+      centerId,
+      centerUserId,
+      centerUserEmail,
+    });
+
+    await activateCenter(centerId, sessionId);
   }
+
+  return Response.json({ received: true });
 }
