@@ -6,7 +6,6 @@ import { stripe } from "@/lib/stripe";
 
 interface CheckoutPayload {
   type: "ACTIVATION_PACK";
-  studentEmail?: string;
 }
 
 const FALLBACK_URL = env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
@@ -27,10 +26,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const centerUserEmail = user.email;
-    const centerUserId = user.centerUserId;
-    const centerId = user.centerId;
-    const studentEmail = payload.studentEmail?.trim() || "";
+    const centerUserEmail = user.email?.trim();
+    const centerUserId = user.centerUserId?.trim();
+    const centerId = user.centerId?.trim();
+
+    if (!centerId || !centerUserId || !centerUserEmail) {
+      return NextResponse.json(
+        { error: "Missing center information for checkout" },
+        { status: 400 }
+      );
+    }
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || FALLBACK_URL;
     const session = await stripe.checkout.sessions.create({
@@ -43,19 +48,24 @@ export async function POST(request: NextRequest) {
         centerId,
         centerUserId,
         centerUserEmail,
-        studentEmail,
       },
       customer_email: centerUserEmail,
     });
 
+    console.log("[checkout] created session", {
+      sessionId: session.id,
+      centerId,
+      centerUserId,
+    });
+
     try {
       await createOrder({
-        Status: "CREATED",
         StripeSessionId: session.id,
-        CenterUserEmail: centerUserEmail,
+        Status: "CREATED",
+        Type: "ACTIVATION_PACK",
         CenterId: centerId,
         CenterUserId: centerUserId,
-        StudentEmail: studentEmail || undefined,
+        CenterUserEmail: centerUserEmail,
         CreatedAt: new Date().toISOString(),
       });
     } catch (error) {

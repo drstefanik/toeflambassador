@@ -41,16 +41,26 @@ export async function POST(req: Request) {
       const centerId = meta.centerId || "";
 
       await upsertOrderBySession(sessionId, {
+        StripeSessionId: sessionId,
         Status: "PAID",
         Amount: amount,
         Currency: currency,
+        Type: meta.type || undefined,
+        CenterId: meta.centerId || undefined,
+        CenterUserId: meta.centerUserId || undefined,
+        CenterUserEmail: meta.centerUserEmail || undefined,
       });
 
       if (centerId) {
         await activateCenter(centerId, sessionId);
       }
 
-      console.log("[stripe.webhook] checkout.session.completed OK", { sessionId, centerId, amount, currency });
+      console.log("[webhook] completed", {
+        sessionId,
+        centerId: meta.centerId,
+        amount,
+        currency,
+      });
     }
 
     if (event.type === "checkout.session.expired") {
