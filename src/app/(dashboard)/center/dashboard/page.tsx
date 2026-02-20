@@ -3,7 +3,34 @@ import { CheckoutButton } from "@/components/checkout-button";
 import { LogoutButton } from "@/components/logout-button";
 import { getUserFromRequest } from "@/lib/auth";
 import { getCenterById } from "@/lib/repositories/centers";
+import { listCenterOrders } from "@/lib/repositories/orders";
 import { redirect } from "next/navigation";
+
+const formatDate = (value: string | null) => {
+  if (!value) return "-";
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return value;
+  return new Intl.DateTimeFormat("it-IT", {
+    dateStyle: "short",
+    timeStyle: "short",
+  }).format(parsed);
+};
+
+const formatAmount = (amount: number | null, currency: string | null) => {
+  if (amount === null || amount === undefined) return "-";
+  if (!currency) return String(amount);
+
+  return new Intl.NumberFormat("it-IT", {
+    style: "currency",
+    currency: currency.toUpperCase(),
+  }).format(amount / 100);
+};
+
+const shortSessionId = (sessionId: string) => {
+  if (!sessionId) return "-";
+  if (sessionId.length <= 12) return sessionId;
+  return `${sessionId.slice(0, 6)}…${sessionId.slice(-4)}`;
+};
 
 export default async function CenterDashboardPage() {
   const user = await getUserFromRequest();
@@ -15,6 +42,8 @@ export default async function CenterDashboardPage() {
   if (!center) {
     redirect("/login-center");
   }
+
+  const orders = await listCenterOrders(user.centerUserId, user.centerId);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-16">
@@ -72,6 +101,39 @@ export default async function CenterDashboardPage() {
           </Link>
         </section>
       </div>
+
+      <section className="mt-8 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 className="text-2xl font-semibold text-slate-900">I tuoi ordini</h2>
+
+        {orders.length === 0 ? (
+          <p className="mt-4 text-slate-600">Nessun ordine</p>
+        ) : (
+          <div className="mt-4 overflow-x-auto">
+            <table className="min-w-full divide-y divide-slate-200 text-sm">
+              <thead>
+                <tr className="text-left text-slate-500">
+                  <th className="py-2 pr-4 font-medium">Data</th>
+                  <th className="py-2 pr-4 font-medium">Tipo</th>
+                  <th className="py-2 pr-4 font-medium">Importo</th>
+                  <th className="py-2 pr-4 font-medium">Stato</th>
+                  <th className="py-2 pr-4 font-medium">SessionId</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-700">
+                {orders.map((order) => (
+                  <tr key={`${order.StripeSessionId}-${order.CreatedAt ?? ""}`}>
+                    <td className="py-2 pr-4">{formatDate(order.CreatedAt)}</td>
+                    <td className="py-2 pr-4">{order.Type ?? "-"}</td>
+                    <td className="py-2 pr-4">{formatAmount(order.Amount, order.Currency)}</td>
+                    <td className="py-2 pr-4">{order.Status ?? "-"}</td>
+                    <td className="py-2 pr-4 font-mono">{shortSessionId(order.StripeSessionId)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
     </div>
   );
 }
