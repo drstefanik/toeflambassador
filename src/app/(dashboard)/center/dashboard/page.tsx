@@ -2,11 +2,18 @@ import Link from "next/link";
 import { CheckoutButton } from "@/components/checkout-button";
 import { LogoutButton } from "@/components/logout-button";
 import { getUserFromRequest } from "@/lib/auth";
+import { findOrdersByCenter } from "@/lib/airtable";
 import { getCenterById } from "@/lib/repositories/centers";
-import { listCenterOrders } from "@/lib/repositories/orders";
 import { redirect } from "next/navigation";
 
-const formatDate = (value: string | null) => {
+interface DashboardOrder {
+  CreatedAt?: string;
+  Amount?: number;
+  Currency?: string;
+  Status?: string;
+}
+
+const formatDate = (value: string | null | undefined) => {
   if (!value) return "-";
   const parsed = new Date(value);
   if (Number.isNaN(parsed.getTime())) return value;
@@ -16,20 +23,9 @@ const formatDate = (value: string | null) => {
   }).format(parsed);
 };
 
-const formatAmount = (amount: number | null, currency: string | null) => {
+const formatAmount = (amount: number | null | undefined) => {
   if (amount === null || amount === undefined) return "-";
-  if (!currency) return String(amount);
-
-  return new Intl.NumberFormat("it-IT", {
-    style: "currency",
-    currency: currency.toUpperCase(),
-  }).format(amount / 100);
-};
-
-const shortSessionId = (sessionId: string) => {
-  if (!sessionId) return "-";
-  if (sessionId.length <= 12) return sessionId;
-  return `${sessionId.slice(0, 6)}…${sessionId.slice(-4)}`;
+  return String(amount);
 };
 
 export default async function CenterDashboardPage() {
@@ -43,7 +39,14 @@ export default async function CenterDashboardPage() {
     redirect("/login-center");
   }
 
-  const orders = await listCenterOrders(user.centerUserId, user.centerId);
+  let orders: DashboardOrder[] = [];
+  try {
+    const fetchedOrders = await findOrdersByCenter(user.centerId, user.centerUserId);
+    orders = fetchedOrders.map((record: { fields?: DashboardOrder }) => record.fields ?? {});
+  } catch (err) {
+    console.error("[dashboard] orders fetch failed", err);
+    orders = [];
+  }
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-16">
@@ -113,20 +116,18 @@ export default async function CenterDashboardPage() {
               <thead>
                 <tr className="text-left text-slate-500">
                   <th className="py-2 pr-4 font-medium">Data</th>
-                  <th className="py-2 pr-4 font-medium">Tipo</th>
                   <th className="py-2 pr-4 font-medium">Importo</th>
+                  <th className="py-2 pr-4 font-medium">Valuta</th>
                   <th className="py-2 pr-4 font-medium">Stato</th>
-                  <th className="py-2 pr-4 font-medium">SessionId</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-700">
-                {orders.map((order) => (
-                  <tr key={`${order.StripeSessionId}-${order.CreatedAt ?? ""}`}>
+                {orders.map((order, index) => (
+                  <tr key={`${order.CreatedAt ?? "order"}-${index}`}>
                     <td className="py-2 pr-4">{formatDate(order.CreatedAt)}</td>
-                    <td className="py-2 pr-4">{order.Type ?? "-"}</td>
-                    <td className="py-2 pr-4">{formatAmount(order.Amount, order.Currency)}</td>
+                    <td className="py-2 pr-4">{formatAmount(order.Amount)}</td>
+                    <td className="py-2 pr-4">{order.Currency ?? "-"}</td>
                     <td className="py-2 pr-4">{order.Status ?? "-"}</td>
-                    <td className="py-2 pr-4 font-mono">{shortSessionId(order.StripeSessionId)}</td>
                   </tr>
                 ))}
               </tbody>

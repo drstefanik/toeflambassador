@@ -5,6 +5,11 @@ import { slugify } from "./slugify";
 type Method = "GET" | "POST" | "PATCH";
 type QueryParams = Record<string, string | number | undefined>;
 
+const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID!;
+const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY!;
+const ORDERS_TABLE = process.env.AIRTABLE_ORDERS_TABLE || "Orders";
+const CENTERS_TABLE = process.env.AIRTABLE_CENTERS_TABLE || "Centers";
+
 export interface AirtableRecord<T> {
   id: string;
   createdTime: string;
@@ -261,6 +266,57 @@ export interface ContactLeadFields {
   ResendMessageId?: string;
 }
 
+type AirtableHttpOptions = RequestInit;
+
+const removeUndefinedFields = <T extends Record<string, unknown>>(fields: T) => {
+  return Object.fromEntries(
+    Object.entries(fields).filter(([, value]) => value !== undefined)
+  ) as Partial<T>;
+};
+
+async function airtableFetch(url: string, options: AirtableHttpOptions = {}) {
+  const apiKey = AIRTABLE_API_KEY || env.AIRTABLE_API_KEY || env.AIRTABLE_PERSONAL_TOKEN;
+  if (!AIRTABLE_BASE_ID || !apiKey) {
+    throw new Error("Missing Airtable configuration");
+  }
+
+  const res = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    cache: "no-store",
+    ...options,
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    console.error("[airtable] request failed", text);
+    throw new Error(text);
+  }
+
+  return res.json();
+}
+
+function buildUrl(table: string, paramsObj: Record<string, string | number | undefined> = {}) {
+  const params = new URLSearchParams();
+  for (const [k, v] of Object.entries(paramsObj)) {
+    if (!v) continue;
+    params.set(k, String(v));
+  }
+
+  return `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(table)}?${params.toString()}`;
+}
+
+function buildRecordUrl(table: string, recordId?: string) {
+  const base = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(table)}`;
+  if (!recordId) {
+    return base;
+  }
+
+  return `${base}/${encodeURIComponent(recordId)}`;
+}
+
 async function fetchAll<TFields>(tableName: string, params?: QueryParams) {
   const records: AirtableRecord<TFields>[] = [];
   let offset: string | undefined;
@@ -307,11 +363,12 @@ async function fetchFirst<TFields>(tableName: string, params?: QueryParams) {
 }
 
 async function createRecord<TFields>(tableName: string, fields: Partial<TFields>) {
+  const safeFields = removeUndefinedFields(fields as Record<string, unknown>);
   const data = await airtableRequest<AirtableListResponse<TFields>>(
     tableName,
     "POST",
     {
-      records: [{ fields }],
+      records: [{ fields: safeFields }],
     }
   );
 
@@ -328,11 +385,55 @@ async function updateRecord<TFields>(
   recordId: string,
   fields: Partial<TFields>
 ) {
+  const safeFields = removeUndefinedFields(fields as Record<string, unknown>);
   return airtableRequest<AirtableRecord<TFields>>(
     `${tableName}/${recordId}`,
     "PATCH",
-    { fields }
+    { fields: safeFields }
   );
+}
+
+export async function findOrdersByCenter(centerId: string, centerUserId: string) {
+  const formula = `OR({CenterId}="${centerId}",{CenterUserId}="${centerUserId}")`;
+  const url = buildUrl(ORDERS_TABLE, { filterByFormula: formula });
+  const response = await airtableFetch(url);
+  return Array.isArray(response?.records) ? response.records : [];
+}
+
+export async function upsertOrderBySession(
+  sessionId: string,
+  fields: Partial<OrderFields>
+) {
+  const formula = `{StripeSessionId}="${sessionId}"`;
+  const searchUrl = buildUrl(ORDERS_TABLE, { filterByFormula: formula });
+  const safeFields = removeUndefinedFields(fields as Record<string, unknown>);
+
+  const search = await airtableFetch(searchUrl);
+  if (search.records.length > 0) {
+    const recordId = search.records[0].id as string;
+    return airtableFetch(buildRecordUrl(ORDERS_TABLE, recordId), {
+      method: "PATCH",
+      body: JSON.stringify({ fields: safeFields }),
+    });
+  }
+
+  return airtableFetch(buildRecordUrl(ORDERS_TABLE), {
+    method: "POST",
+    body: JSON.stringify({ fields: safeFields }),
+  });
+}
+
+export async function activateCenter(centerId: string, sessionId: string) {
+  return airtableFetch(buildRecordUrl(CENTERS_TABLE, centerId), {
+    method: "PATCH",
+    body: JSON.stringify({
+      fields: {
+        ActivationPackStatus: "ACTIVE",
+        ActivationPackPaidAt: new Date().toISOString(),
+        ActivationPackOrderSessionId: sessionId,
+      },
+    }),
+  });
 }
 
 export async function getCenterBySlug(slug: string) {
