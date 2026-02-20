@@ -369,9 +369,7 @@ async function fetchFirst<TFields>(tableName: string, params?: QueryParams) {
 }
 
 async function createRecord<TFields>(tableName: string, fields: Partial<TFields>) {
-  const safeFields = removeUndefinedFields(
-    { StripeSessionId: sessionId, ...fields } as Record<string, unknown>
-  );
+  const safeFields = removeUndefinedFields(fields as Record<string, unknown>);
   const data = await airtableRequest<AirtableListResponse<TFields>>(
     tableName,
     "POST",
@@ -393,9 +391,7 @@ async function updateRecord<TFields>(
   recordId: string,
   fields: Partial<TFields>
 ) {
-  const safeFields = removeUndefinedFields(
-    { StripeSessionId: sessionId, ...fields } as Record<string, unknown>
-  );
+  const safeFields = removeUndefinedFields(fields as Record<string, unknown>);
   return airtableRequest<AirtableRecord<TFields>>(
     `${tableName}/${recordId}`,
     "PATCH",
