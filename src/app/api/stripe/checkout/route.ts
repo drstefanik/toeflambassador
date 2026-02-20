@@ -32,12 +32,12 @@ export async function POST(request: NextRequest) {
     const centerId = user.centerId;
     const studentEmail = payload.studentEmail?.trim() || "";
 
-    const origin = request.headers.get("origin") ?? FALLBACK_URL;
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || FALLBACK_URL;
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       line_items: [{ price: env.TOEFL_Ambassador_Activation_Pack_PRICE_ID, quantity: 1 }],
-      success_url: `${origin}?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}?canceled=1`,
+      success_url: `${appUrl}/center/dashboard?success=1`,
+      cancel_url: `${appUrl}/center/dashboard?canceled=1`,
       metadata: {
         type: "ACTIVATION_PACK",
         centerId,
