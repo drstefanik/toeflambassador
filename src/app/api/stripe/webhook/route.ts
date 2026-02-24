@@ -4,13 +4,6 @@ import { upsertOrderBySession, activateCenter } from "@/lib/airtable";
 
 const ALLOWED_STATUS_VALUES = new Set(["CREATED", "PAID", "EXPIRED"]);
 
-class AirtableWebhookError extends Error {
-  constructor(message: string, options?: { cause?: unknown }) {
-    super(message, options);
-    this.name = "AirtableWebhookError";
-  }
-}
-
 function getStripeClient() {
   const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
   if (!stripeSecretKey) {
@@ -56,9 +49,17 @@ export async function POST(req: Request) {
       const session = event.data.object as Stripe.Checkout.Session;
 
       const sessionId = session.id;
+      if (!sessionId) {
+        return NextResponse.json({ received: true }, { status: 200 });
+      }
+
       const amount = (session.amount_total ?? 0) / 100;
       const currency = (session.currency ?? "eur").toUpperCase();
       const meta = session.metadata || {};
+      if (!meta.centerId) {
+        console.warn("Missing centerId in metadata");
+      }
+
       const centerId = meta.centerId || "";
       const typeValue = normalizeTypeValue(meta.type);
       const statusValue = normalizeStatusValue("PAID");
@@ -88,7 +89,6 @@ export async function POST(req: Request) {
         }
       } catch (e) {
         console.error("[webhook] Airtable failure", e);
-        return NextResponse.json({ error: "airtable failure" }, { status: 500 });
       }
 
       console.log("[webhook] completed", {
@@ -106,7 +106,6 @@ export async function POST(req: Request) {
         await upsertOrderBySession(session.id, { Status: normalizeStatusValue("EXPIRED") });
       } catch (error) {
         console.error("[webhook] airtable update failed", error);
-        throw new AirtableWebhookError("Airtable update failed", { cause: error });
       }
 
       console.log("[stripe.webhook] checkout.session.expired", { sessionId: session.id });
@@ -116,11 +115,6 @@ export async function POST(req: Request) {
   } catch (err) {
     console.error("[stripe.webhook] ERROR", err);
 
-    if (err instanceof AirtableWebhookError) {
-      return NextResponse.json({ error: "airtable failed" }, { status: 500 });
-    }
-
-    // Keep 200 for non-Airtable failures to avoid unnecessary Stripe retries.
     return NextResponse.json({ received: true }, { status: 200 });
   }
 }
