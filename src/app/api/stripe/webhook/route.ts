@@ -63,7 +63,13 @@ export async function POST(req: Request) {
       const typeValue = normalizeTypeValue(meta.type);
       const statusValue = normalizeStatusValue("PAID");
 
+      console.log("[webhook] session.id", session.id);
       console.log("[webhook] metadata", session.metadata);
+      console.log("[webhook] airtable env", {
+        baseId: process.env.AIRTABLE_BASE_ID,
+        ordersTable: process.env.AIRTABLE_ORDERS_TABLE,
+        centersTable: process.env.AIRTABLE_CENTERS_TABLE,
+      });
 
       try {
         await upsertOrderBySession(sessionId, {
@@ -80,9 +86,9 @@ export async function POST(req: Request) {
         if (centerId) {
           await activateCenter(centerId, sessionId);
         }
-      } catch (error) {
-        console.error("[webhook] airtable update failed", error);
-        throw new AirtableWebhookError("Airtable update failed", { cause: error });
+      } catch (e) {
+        console.error("[webhook] Airtable failure", e);
+        return NextResponse.json({ error: "airtable failure" }, { status: 500 });
       }
 
       console.log("[webhook] completed", {
