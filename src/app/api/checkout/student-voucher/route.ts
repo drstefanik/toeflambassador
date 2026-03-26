@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getUserFromRequest } from "@/lib/auth";
-import { env } from "@/lib/config";
 import { createOrderFromStripeSession } from "@/lib/repositories/orders";
 import { stripe } from "@/lib/stripe";
 
@@ -13,8 +12,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
     }
 
-    if (!env.TOEFL_iBT_Voucher_ID) {
-      return NextResponse.json({ error: "ID voucher non configurato" }, { status: 500 });
+    const voucherPriceId = process.env.TOEFL_iBT_Voucher_PRICE_ID;
+    if (!voucherPriceId) {
+      console.error("[checkout student voucher] Missing TOEFL_iBT_Voucher_PRICE_ID environment variable");
+      return NextResponse.json({ error: "Prezzo voucher non configurato" }, { status: 500 });
     }
 
     const origin = request.headers.get("origin") ?? FALLBACK_URL;
@@ -22,7 +23,7 @@ export async function POST(request: NextRequest) {
       mode: "payment",
       line_items: [
         {
-          price: env.TOEFL_iBT_Voucher_ID,
+          price: voucherPriceId,
           quantity: 1,
         },
       ],
