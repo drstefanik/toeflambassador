@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     });
 
     await createOrderFromStripeSession(session, "student_voucher", {
-      studentId: user.studentId,
+      studentEmail: user.email,
     });
 
     return NextResponse.json({ url: session.url });

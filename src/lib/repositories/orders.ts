@@ -24,18 +24,51 @@ export interface CenterOrder {
 export async function createOrderFromStripeSession(
   session: Stripe.Checkout.Session,
   type: "center_kit" | "student_voucher",
-  options: { centerUserId?: string; centerId?: string; studentId?: string }
+  options: {
+    centerUserId?: string;
+    centerId?: string;
+    studentEmail?: string;
+    // Future-safe placeholder: keep non-invasive support for a structured student field if introduced.
+    studentRecordId?: string;
+  }
 ) {
-  return createOrder({
+  const fields: OrderFields = {
     StripeSessionId: session.id,
     Status: "pending",
     Type: type,
-    CenterUser: options.centerUserId ? [options.centerUserId] : undefined,
-    Center: options.centerId ? [options.centerId] : undefined,
-    Student: options.studentId ? [options.studentId] : undefined,
     AmountTotal: session.amount_total ?? undefined,
     Currency: session.currency ?? undefined,
+  };
+
+  if (options.centerUserId) {
+    fields.CenterUser = [options.centerUserId];
+  }
+
+  if (options.centerId) {
+    fields.Center = [options.centerId];
+  }
+
+  if (options.studentEmail) {
+    fields.StudentEmail = options.studentEmail;
+  }
+
+  const cleanedFields = Object.fromEntries(
+    Object.entries(fields).filter(([, value]) => value !== undefined)
+  ) as OrderFields;
+
+  console.log("[orders.createOrderFromStripeSession] Creating order with fields", {
+    fieldNames: Object.keys(cleanedFields),
   });
+
+  try {
+    return await createOrder(cleanedFields);
+  } catch (error) {
+    console.error("[orders.createOrderFromStripeSession] Airtable create order failed", {
+      fields: cleanedFields,
+      message: error instanceof Error ? error.message : String(error),
+    });
+    throw error;
+  }
 }
 
 export async function markOrderPaid(stripeSessionId: string, paymentIntentId?: string) {
