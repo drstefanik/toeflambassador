@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
 
     const otpCenterId = centerIds[0];
     const center = await getCenterById(otpCenterId);
-    if (!center.slug || center.slug !== centerSlug) {
+    if (!center || !center.slug || center.slug !== centerSlug) {
       return NextResponse.json(
         { error: "OTP non valido per questo centro" },
         { status: 400 }

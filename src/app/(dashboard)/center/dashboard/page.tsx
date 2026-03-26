@@ -34,13 +34,35 @@ const formatAmount = (amount: number | null | undefined) => {
 
 export default async function CenterDashboardPage() {
   noStore();
-  const user = await getUserFromRequest();
+  let user = null;
+  try {
+    user = await getUserFromRequest();
+  } catch (error) {
+    console.error("[center/dashboard] getUserFromRequest failed", {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    redirect("/login-center");
+  }
+
   if (!user || user.role !== "center") {
+    redirect("/login-center");
+  }
+
+  if (!user.centerId) {
+    console.error("[center/dashboard] Missing centerId in auth payload", {
+      centerUserId: user.centerUserId,
+      email: user.email,
+    });
     redirect("/login-center");
   }
 
   const center = await getCenterById(user.centerId);
   if (!center) {
+    console.error("[center/dashboard] Center not found or Airtable unavailable", {
+      centerId: user.centerId,
+      centerUserId: user.centerUserId,
+      email: user.email,
+    });
     redirect("/login-center");
   }
 

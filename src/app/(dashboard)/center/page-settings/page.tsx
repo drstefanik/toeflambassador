@@ -9,7 +9,23 @@ export default async function CenterPageSettings() {
     redirect("/login-center");
   }
 
+  if (!user.centerId) {
+    console.error("[center/page-settings] Missing centerId in auth payload", {
+      centerUserId: user.centerUserId,
+      email: user.email,
+    });
+    redirect("/login-center");
+  }
+
   const center = await getCenterById(user.centerId);
+  if (!center) {
+    console.error("[center/page-settings] Center not found or Airtable unavailable", {
+      centerId: user.centerId,
+      centerUserId: user.centerUserId,
+      email: user.email,
+    });
+    redirect("/login-center");
+  }
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-16">

@@ -52,9 +52,22 @@ export async function getCenterBySlug(slug: string) {
   return record ? mapCenter(record) : null;
 }
 
-export async function getCenterById(centerId: string) {
-  const record = await fetchCenterById(centerId);
-  return mapCenter(record);
+export async function getCenterById(centerId?: string | null) {
+  if (!centerId) {
+    console.warn("[centers.getCenterById] Missing centerId");
+    return null;
+  }
+
+  try {
+    const record = await fetchCenterById(centerId);
+    return mapCenter(record);
+  } catch (error) {
+    console.error("[centers.getCenterById] Failed to fetch center", {
+      centerId,
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return null;
+  }
 }
 
 export async function updateCenterFields(centerId: string, fields: Partial<CenterFields>) {
