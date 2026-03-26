@@ -165,9 +165,7 @@ const ORDER_FIELDS = {
   StudentEmail: "StudentEmail",
   CreatedAt: "CreatedAt",
   Amount: "Amount",
-  CenterUser: "CenterUser",
-  Center: "Center",
-  AmountTotal: "AmountTotal",
+  Centers: "Centers",
   Currency: "Currency",
 };
 
@@ -250,9 +248,7 @@ export interface OrderFields {
   StudentEmail?: string;
   CreatedAt?: string;
   Amount?: number;
-  CenterUser?: string[];
-  Center?: string[];
-  AmountTotal?: number;
+  Centers?: string[];
   Currency?: string;
 }
 

@@ -34,16 +34,17 @@ export async function createOrderFromStripeSession(
     StripeSessionId: session.id,
     Status: "pending",
     Type: type,
-    AmountTotal: session.amount_total ?? undefined,
+    Amount: session.amount_total ?? undefined,
     Currency: session.currency ?? undefined,
   };
 
-  if (options.centerUserId) {
-    fields.CenterUser = [options.centerUserId];
+  if (options.centerId) {
+    fields.Centers = [options.centerId];
+    fields.CenterId = options.centerId;
   }
 
-  if (options.centerId) {
-    fields.Center = [options.centerId];
+  if (options.centerUserId) {
+    fields.CenterUserId = options.centerUserId;
   }
 
   if (options.studentEmail) {
@@ -101,7 +102,7 @@ export async function listCenterOrders(centerUserId: string, centerId: string) {
 
   return records.map((record) => ({
     StripeSessionId: record.fields.StripeSessionId ?? "",
-    Amount: record.fields.Amount ?? record.fields.AmountTotal ?? null,
+    Amount: record.fields.Amount ?? null,
     Currency: record.fields.Currency ?? null,
     Status: record.fields.Status ?? null,
     CreatedAt: record.fields.CreatedAt ?? null,
