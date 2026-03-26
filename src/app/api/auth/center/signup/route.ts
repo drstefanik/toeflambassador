@@ -47,26 +47,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const centerValue = centerSlug;
-    console.log("typeof Center", typeof centerValue, centerValue);
-    if (typeof centerValue !== "string") {
-      return NextResponse.json({ error: "Centro non valido" }, { status: 400 });
-    }
-
     let centerUser = await findCenterUserByEmail(email);
     const passwordHash = await hashPassword(password);
     if (!centerUser) {
       const fields = {
         Email: email,
         PasswordHash: passwordHash,
-        Center: centerSlug,
+        Center: center.id,
       };
       console.log("CenterUsers fields:", Object.keys(fields));
       centerUser = await createCenterUserRecord(fields);
     } else {
       const fields = {
         PasswordHash: passwordHash,
-        Center: centerSlug,
+        Center: center.id,
       };
       console.log("CenterUsers fields:", Object.keys(fields));
       centerUser = await updateCenterUserRecord(centerUser.id, fields);

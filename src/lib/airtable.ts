@@ -213,7 +213,7 @@ export interface CenterFields {
 export interface CenterUserFields {
   Email?: string;
   PasswordHash?: string;
-  Center?: string;
+  Center?: string | string[];
 }
 
 export interface StudentFields {
