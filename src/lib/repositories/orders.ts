@@ -28,8 +28,6 @@ export async function createOrderFromStripeSession(
     centerUserId?: string;
     centerId?: string;
     studentEmail?: string;
-    // Future-safe placeholder: keep non-invasive support for a structured student field if introduced.
-    studentRecordId?: string;
   }
 ) {
   const fields: OrderFields = {
