@@ -53,16 +53,6 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* CTA */}
-          <div className="relative mt-6 flex flex-col gap-4 sm:flex-row">
-            <CtaButton href={homeContent.hero.centerCta.href}>
-              {homeContent.hero.centerCta.label}
-            </CtaButton>
-            <CtaButton href={homeContent.hero.studentCta.href} variant="secondary">
-              {homeContent.hero.studentCta.label}
-            </CtaButton>
-          </div>
-
           {/* Linea brand sotto l’hero */}
           <div className="mt-8 h-px w-full max-w-4xl bg-gradient-to-r from-transparent via-[#9196FF] to-transparent" />
         </section>

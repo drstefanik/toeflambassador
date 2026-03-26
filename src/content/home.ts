@@ -6,15 +6,6 @@ export const homeContent = {
     title: "TOEFL Ambassador: il programma ufficiale per sedi e studenti",
     subtitle:
       "La rete ETS che supporta scuole, università, centri di formazione e studenti nel percorso TOEFL iBT®. Orientamento, registrazione e materiali ufficiali in un unico punto di riferimento.",
-
-    centerCta: {
-      label: "Sono un ente",
-      href: "/partner/chi-puo-aderire",
-    },
-    studentCta: {
-      label: "Sono uno studente",
-      href: "/student/esame-toefl",
-    },
   },
 
   centersTeaser: {
