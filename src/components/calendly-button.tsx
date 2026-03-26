@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import Script from "next/script";
+import { useCallback, useState } from "react";
 import { cn } from "@/lib/utils";
 
 type CalendlyButtonProps = {
@@ -13,7 +14,7 @@ type CalendlyButtonProps = {
 declare global {
   interface Window {
     Calendly?: {
-      initPopupWidget: (options: { url: string }) => void;
+      initPopupWidget?: (options: { url: string }) => void;
     };
   }
 }
@@ -27,48 +28,19 @@ export function CalendlyButton({
   variant = "primary",
   size = "md",
 }: CalendlyButtonProps) {
-  const [scriptReady, setScriptReady] = useState(() => typeof window !== "undefined" && Boolean(window.Calendly));
+  const [isLoaded, setIsLoaded] = useState(() => typeof window !== "undefined" && Boolean(window.Calendly));
 
-  useEffect(() => {
+  const openCalendlyPopup = useCallback(() => {
     if (!calendlyUrl) {
       return;
     }
 
-    if (window.Calendly) {
-      queueMicrotask(() => setScriptReady(true));
+    if (window.Calendly?.initPopupWidget) {
+      window.Calendly.initPopupWidget({ url: calendlyUrl });
       return;
     }
 
-    const existingScript = document.getElementById(CALENDLY_SCRIPT_ID) as HTMLScriptElement | null;
-
-    if (existingScript) {
-      if (existingScript.dataset.loaded === "true") {
-        queueMicrotask(() => setScriptReady(true));
-        return;
-      }
-
-      const markReady = () => setScriptReady(true);
-      existingScript.addEventListener("load", markReady);
-      return () => existingScript.removeEventListener("load", markReady);
-    }
-
-    const script = document.createElement("script");
-    script.id = CALENDLY_SCRIPT_ID;
-    script.src = "https://assets.calendly.com/assets/external/widget.js";
-    script.async = true;
-    script.onload = () => {
-      script.dataset.loaded = "true";
-      setScriptReady(true);
-    };
-    document.body.appendChild(script);
-  }, []);
-
-  const openCalendlyPopup = useCallback(() => {
-    if (!calendlyUrl || !window.Calendly) {
-      return;
-    }
-
-    window.Calendly.initPopupWidget({ url: calendlyUrl });
+    window.open(calendlyUrl, "_blank", "noopener,noreferrer");
   }, []);
 
   const baseStyles =
@@ -95,13 +67,22 @@ export function CalendlyButton({
   }
 
   return (
-    <button
-      type="button"
-      onClick={openCalendlyPopup}
-      disabled={!scriptReady}
-      className={cn(baseStyles, sizes[size], variants[variant], className)}
-    >
-      {scriptReady ? label : "Caricamento calendario..."}
-    </button>
+    <>
+      <Script
+        id={CALENDLY_SCRIPT_ID}
+        src="https://assets.calendly.com/assets/external/widget.js"
+        strategy="afterInteractive"
+        onLoad={() => setIsLoaded(true)}
+      />
+
+      <button
+        type="button"
+        onClick={openCalendlyPopup}
+        disabled={!isLoaded}
+        className={cn(baseStyles, sizes[size], variants[variant], className)}
+      >
+        {isLoaded ? label : "Caricamento calendario..."}
+      </button>
+    </>
   );
 }
