@@ -167,7 +167,6 @@ const ORDER_FIELDS = {
   Amount: "Amount",
   CenterUser: "CenterUser",
   Center: "Center",
-  Student: "Student",
   AmountTotal: "AmountTotal",
   Currency: "Currency",
 };
@@ -253,7 +252,6 @@ export interface OrderFields {
   Amount?: number;
   CenterUser?: string[];
   Center?: string[];
-  Student?: string[];
   AmountTotal?: number;
   Currency?: string;
 }
