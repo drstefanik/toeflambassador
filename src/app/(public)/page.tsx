@@ -12,14 +12,6 @@ export default function HomePage() {
           {homeContent.hero.title}
         </h1>
         <p className="max-w-3xl text-lg text-slate-600">{homeContent.hero.subtitle}</p>
-        <div className="flex flex-col gap-4 sm:flex-row">
-          <CtaButton href={homeContent.hero.centerCta.href}>
-            {homeContent.hero.centerCta.label}
-          </CtaButton>
-          <CtaButton href={homeContent.hero.studentCta.href} variant="secondary">
-            {homeContent.hero.studentCta.label}
-          </CtaButton>
-        </div>
       </section>
 
       <section className="mx-auto grid max-w-6xl gap-6 px-4 pb-20 sm:grid-cols-2">
