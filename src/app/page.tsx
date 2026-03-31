@@ -25,7 +25,7 @@ export default async function HomePage() {
       <div className="absolute inset-0 -z-10 bg-gradient-to-b from-white/95 via-white/85 to-[#F0FF96]/40" />
 
       <main className="relative">
-        <section className="relative mx-auto flex max-w-6xl flex-col items-center gap-10 px-4 pt-16 pb-20 text-center sm:pt-24">
+        <section className="relative mx-auto flex max-w-6xl flex-col items-center gap-10 px-4 pt-16 pb-16 text-center sm:pt-24 sm:pb-20">
           <div
             className="pointer-events-none absolute inset-x-0 -top-32 h-64 bg-gradient-to-b from-[#9196FF]/25 to-transparent blur-3xl"
             aria-hidden="true"
@@ -55,62 +55,50 @@ export default async function HomePage() {
           <div className="mt-8 h-px w-full max-w-4xl bg-gradient-to-r from-transparent via-[#9196FF] to-transparent" />
         </section>
 
-        <section className="mx-auto grid max-w-6xl gap-6 px-4 pb-10 sm:pb-14">
-          <article className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white/90 p-8 shadow-sm transition-transform duration-200 hover:-translate-y-1 hover:shadow-md">
-            <span
-              className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#9196FF] via-[#343579] to-[#FF8F60]"
-              aria-hidden="true"
-            />
-            <p className="text-sm font-semibold text-[#343579]">Centri</p>
-            <h2 className="mt-2 text-2xl font-semibold text-slate-900">{homeContent.centersTeaser.title}</h2>
-            <p className="mt-3 text-slate-600">{homeContent.centersTeaser.description}</p>
-            <CtaButton className="mt-6" href={homeContent.centersTeaser.cta.href}>
-              {homeContent.centersTeaser.cta.label}
-            </CtaButton>
-          </article>
-        </section>
+        <section className="mx-auto max-w-6xl px-4 py-6 sm:py-10">
+          <div className="rounded-3xl border border-slate-200/90 bg-white/90 p-7 shadow-[0_20px_55px_-35px_rgba(52,53,121,0.45)] backdrop-blur-sm sm:p-9">
+            <h2 className="max-w-4xl text-3xl font-semibold text-slate-900 sm:text-4xl">
+              TOEFL Ambassador per gli studenti
+            </h2>
+            <p className="mt-4 max-w-4xl text-lg text-slate-700">
+              Preparazione all&apos;esame, supporto alla registrazione, orientamento ufficiale ETS e utilizzo del
+              punteggio TOEFL iBT® in un percorso chiaro: dalla scelta del centro ai materiali per arrivare pronti
+              all&apos;esame.
+            </p>
 
-        <section className="mx-auto max-w-6xl px-4 py-10 sm:py-14">
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#FF8F60]">
-            {homeContent.studentsSection.label}
-          </p>
-          <h2 className="mt-4 max-w-4xl text-3xl font-semibold text-slate-900 sm:text-4xl">
-            {homeContent.studentsSection.title}
-          </h2>
-          <p className="mt-4 max-w-4xl text-lg text-slate-700">{homeContent.studentsSection.description}</p>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <CtaButton href={homeContent.studentsSection.primaryCta.href}>
+                {homeContent.studentsSection.primaryCta.label}
+              </CtaButton>
+              <CtaButton href={homeContent.studentsSection.secondaryCta.href} variant="secondary">
+                {homeContent.studentsSection.secondaryCta.label}
+              </CtaButton>
+            </div>
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <CtaButton href={homeContent.studentsSection.primaryCta.href}>
-              {homeContent.studentsSection.primaryCta.label}
-            </CtaButton>
-            <CtaButton href={homeContent.studentsSection.secondaryCta.href} variant="secondary">
-              {homeContent.studentsSection.secondaryCta.label}
-            </CtaButton>
-          </div>
-
-          <div className="mt-10 grid gap-6 sm:grid-cols-2">
-            {homeContent.studentsSection.links.map((link) => (
-              <article
-                key={link.href}
-                className="group flex h-full flex-col justify-between rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
-              >
-                <div>
-                  <h3 className="text-xl font-semibold text-slate-900">{link.title}</h3>
-                  <p className="mt-2 text-slate-700">{link.description}</p>
-                </div>
-                <Link
-                  className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-[#343579] transition group-hover:text-[#1f2050]"
-                  href={link.href}
+            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:gap-5">
+              {homeContent.studentsSection.links.map((link) => (
+                <article
+                  key={link.href}
+                  className="group flex h-full min-h-52 flex-col justify-between rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-[#9196FF]/60 hover:shadow-md"
                 >
-                  Vai alla sezione
-                  <span aria-hidden>→</span>
-                </Link>
-              </article>
-            ))}
+                  <div>
+                    <h3 className="text-lg font-semibold text-slate-900 sm:text-xl">{link.title}</h3>
+                    <p className="mt-2 text-sm leading-6 text-slate-700 sm:text-base">{link.description}</p>
+                  </div>
+                  <Link
+                    className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-[#343579] transition group-hover:text-[#1f2050]"
+                    href={link.href}
+                  >
+                    Vai alla sezione
+                    <span aria-hidden>→</span>
+                  </Link>
+                </article>
+              ))}
+            </div>
           </div>
         </section>
 
-        <section className="mx-auto max-w-6xl px-4 pb-24">
+        <section className="mx-auto max-w-6xl px-4 pt-8 pb-16 sm:pt-10 sm:pb-20">
           <div className="rounded-3xl border border-[#9196FF]/30 bg-gradient-to-br from-white via-[#EEF0FF] to-[#FFF3EC] p-8 shadow-[0_20px_60px_-30px_rgba(52,53,121,0.45)] sm:p-10">
             <div className="grid items-center gap-8 lg:grid-cols-[1.3fr_1fr]">
               <div>
@@ -121,6 +109,10 @@ export default async function HomePage() {
                   {homeContent.materialSection.title}
                 </h2>
                 <p className="mt-4 max-w-2xl text-lg text-slate-700">{homeContent.materialSection.description}</p>
+                <p className="mt-3 max-w-2xl text-sm text-slate-600 sm:text-base">
+                  Dopo aver scelto data e sede, completa la preparazione con risorse ufficiali pensate per ottenere il
+                  massimo dal tuo percorso TOEFL.
+                </p>
               </div>
 
               <div className="rounded-2xl border border-white/80 bg-white/90 p-5 shadow-sm sm:p-6">
@@ -143,6 +135,27 @@ export default async function HomePage() {
               </div>
             </div>
           </div>
+        </section>
+
+        <section className="mx-auto max-w-6xl px-4 pb-20 sm:pb-24">
+          <article className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white/92 px-6 py-6 shadow-sm transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-md sm:px-8 sm:py-7">
+            <span
+              className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#9196FF] via-[#343579] to-[#FF8F60]"
+              aria-hidden="true"
+            />
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+              <div className="max-w-3xl">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#343579]">Per scuole e centri</p>
+                <h2 className="mt-2 text-xl font-semibold text-slate-900 sm:text-2xl">
+                  {homeContent.centersTeaser.title}
+                </h2>
+                <p className="mt-2 text-sm text-slate-600 sm:text-base">{homeContent.centersTeaser.description}</p>
+              </div>
+              <CtaButton className="w-full justify-center sm:w-auto" href={homeContent.centersTeaser.cta.href}>
+                {homeContent.centersTeaser.cta.label}
+              </CtaButton>
+            </div>
+          </article>
         </section>
       </main>
     </div>
