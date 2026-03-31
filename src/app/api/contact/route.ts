@@ -1,23 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Ratelimit } from "@upstash/ratelimit";
-import { Redis } from "@upstash/redis";
 import { createContactLead, getCenterRecordBySlug } from "@/lib/airtable";
 import { sendEmail } from "@/lib/email";
 import { env } from "@/lib/config";
-
-const redis = env.UPSTASH_REDIS_REST_URL && env.UPSTASH_REDIS_REST_TOKEN
-  ? new Redis({
-      url: env.UPSTASH_REDIS_REST_URL,
-      token: env.UPSTASH_REDIS_REST_TOKEN,
-    })
-  : null;
-
-const ratelimit = redis
-  ? new Ratelimit({
-      redis,
-      limiter: Ratelimit.slidingWindow(5, "10 m"),
-    })
-  : null;
+import { safeRateLimit } from "@/lib/safe-ratelimit";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -83,11 +68,15 @@ export async function POST(request: NextRequest) {
 
     const ip = getClientIp(request);
 
-    if (ratelimit) {
-      const { success } = await ratelimit.limit(`contactform:${ip}`);
-      if (!success) {
-        return errorResponse(429, "rate_limited", "Too many requests");
-      }
+    const rateLimitResult = await safeRateLimit({
+      key: `contactform:${ip}`,
+      maxRequests: 5,
+      window: "10 m",
+      timeoutMs: 2000,
+    });
+
+    if (!rateLimitResult.allowed) {
+      return errorResponse(429, "rate_limited", "Too many requests");
     }
 
     const centerRecord = await getCenterRecordBySlug(centerSlug);
