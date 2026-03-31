@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { CtaButton } from "@/components/cta-button";
+import { getUserFromRequest } from "@/lib/auth";
+import { resolveStudentCtaTarget } from "@/lib/student-action-routing";
 
 const studentLinks = [
   { title: "L’esame TOEFL", description: "Formato, durata e competenze valutate dal TOEFL iBT®.", href: "/student/esame-toefl" },
@@ -8,7 +10,11 @@ const studentLinks = [
   { title: "Acquista il TOEFL iBT", description: "Completa l’acquisto attraverso il canale ufficiale ETS.", href: "/student/acquista-toefl-ibt" },
 ];
 
-export default function StudentPage() {
+export default async function StudentPage() {
+  const user = await getUserFromRequest();
+  const bookingCtaHref = resolveStudentCtaTarget(user, "book-exam");
+  const purchaseCtaHref = resolveStudentCtaTarget(user, "buy-exam");
+
   return (
     <div className="bg-gradient-to-b from-white via-slate-50 to-[#F0FF96]/30">
       <section className="mx-auto max-w-5xl px-4 py-16 sm:py-20">
@@ -19,7 +25,7 @@ export default function StudentPage() {
         </p>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <CtaButton href="/student/prenota-esame">Prenota il tuo esame</CtaButton>
+          <CtaButton href={bookingCtaHref}>Prenota il tuo esame</CtaButton>
           <CtaButton href="/student/esame-toefl" variant="secondary">
             Scopri l’esame
           </CtaButton>
@@ -50,7 +56,7 @@ export default function StudentPage() {
               </div>
               <Link
                 className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-sky-700 transition group-hover:text-sky-800"
-                href={link.href}
+                href={link.href === "/student/prenota-esame" ? bookingCtaHref : link.href === "/student/acquista-toefl-ibt" ? purchaseCtaHref : link.href}
               >
                 Vai alla sezione
                 <span aria-hidden>→</span>

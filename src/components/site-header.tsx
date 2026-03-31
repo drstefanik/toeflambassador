@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { navigationContent } from "@/content/navigation";
+import { resolveStudentCtaTargetByRole } from "@/lib/student-action-routing";
 
 type UserRole = "student" | "center" | null;
 
@@ -14,6 +15,11 @@ const AUTH_LINKS = new Set([
   "/signup-center",
   "/signup-student",
 ]);
+const resolveStudentNavHref = (href: string, role: UserRole) => {
+  if (href === "/student/prenota-esame") return resolveStudentCtaTargetByRole(role, "book-exam");
+  if (href === "/student/acquista-toefl-ibt") return resolveStudentCtaTargetByRole(role, "buy-exam");
+  return href;
+};
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -188,19 +194,25 @@ export function SiteHeader() {
                   {isOpen && (
                     <div className="absolute right-0 mt-2 w-64 rounded-2xl border border-slate-200 bg-white p-3 shadow-lg">
                       <ul className="space-y-1 text-sm">
-                        {filteredChildren.map((child) => (
-                          <li key={child.href}>
-                            <Link
-                              href={child.href}
-                              onClick={handleNavigate}
-                              className={`flex rounded-xl px-3 py-2 transition hover:bg-slate-50 hover:text-slate-900 ${
-                                isActiveLink(child.href) ? "bg-slate-100 text-slate-900" : ""
-                              }`}
-                            >
-                              {child.label}
-                            </Link>
-                          </li>
-                        ))}
+                        {filteredChildren.map((child) => {
+                          const childHref = item.label === "Studenti"
+                            ? resolveStudentNavHref(child.href, userRole)
+                            : child.href;
+
+                          return (
+                            <li key={child.href}>
+                              <Link
+                                href={childHref}
+                                onClick={handleNavigate}
+                                className={`flex rounded-xl px-3 py-2 transition hover:bg-slate-50 hover:text-slate-900 ${
+                                  isActiveLink(childHref) ? "bg-slate-100 text-slate-900" : ""
+                                }`}
+                              >
+                                {child.label}
+                              </Link>
+                            </li>
+                          );
+                        })}
                       </ul>
                     </div>
                   )}
@@ -273,21 +285,27 @@ export function SiteHeader() {
                     {expanded && (
                       <div className="border-t border-slate-100 bg-slate-50">
                         <ul className="flex flex-col">
-                          {filteredChildren.map((child) => (
-                            <li key={child.href}>
-                              <Link
-                                href={child.href}
-                                onClick={handleNavigate}
-                                className={`block px-4 py-3 text-[15px] transition hover:bg-white ${
-                                  isActiveLink(child.href)
-                                    ? "bg-white text-slate-900"
-                                    : "text-slate-700"
-                                }`}
-                              >
-                                {child.label}
-                              </Link>
-                            </li>
-                          ))}
+                          {filteredChildren.map((child) => {
+                            const childHref = item.label === "Studenti"
+                              ? resolveStudentNavHref(child.href, userRole)
+                              : child.href;
+
+                            return (
+                              <li key={child.href}>
+                                <Link
+                                  href={childHref}
+                                  onClick={handleNavigate}
+                                  className={`block px-4 py-3 text-[15px] transition hover:bg-white ${
+                                    isActiveLink(childHref)
+                                      ? "bg-white text-slate-900"
+                                      : "text-slate-700"
+                                  }`}
+                                >
+                                  {child.label}
+                                </Link>
+                              </li>
+                            );
+                          })}
                         </ul>
                       </div>
                     )}

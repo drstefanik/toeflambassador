@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getUserFromRequest } from "@/lib/auth";
+import { resolveStudentCtaTarget } from "@/lib/student-action-routing";
 
 const sections = [
   {
@@ -21,7 +22,7 @@ const sections = [
 
 export default async function EsameToeflPage() {
   const user = await getUserFromRequest();
-  const ctaHref = user ? "/student/dashboard" : "/login-student";
+  const ctaHref = resolveStudentCtaTarget(user, "buy-exam");
 
   return (
     <div className="relative overflow-hidden bg-slate-950">

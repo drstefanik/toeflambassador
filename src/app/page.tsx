@@ -4,10 +4,13 @@ import { CheckoutButton } from "@/components/checkout-button";
 import { CtaButton } from "@/components/cta-button";
 import { homeContent } from "@/content/home";
 import { getUserFromRequest } from "@/lib/auth";
+import { resolveStudentCtaTarget } from "@/lib/student-action-routing";
 
 export default async function HomePage() {
   const user = await getUserFromRequest();
   const isStudent = user?.role === "student";
+  const bookingCtaHref = resolveStudentCtaTarget(user, "book-exam");
+  const purchaseCtaHref = resolveStudentCtaTarget(user, "buy-exam");
 
   return (
     <div className="relative">
@@ -67,7 +70,7 @@ export default async function HomePage() {
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-              <CtaButton href={homeContent.studentsSection.primaryCta.href}>
+              <CtaButton href={bookingCtaHref}>
                 {homeContent.studentsSection.primaryCta.label}
               </CtaButton>
               <CtaButton href={homeContent.studentsSection.secondaryCta.href} variant="secondary">
@@ -87,7 +90,7 @@ export default async function HomePage() {
                   </div>
                   <Link
                     className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-[#343579] transition group-hover:text-[#1f2050]"
-                    href={link.href}
+                    href={link.href === "/student/prenota-esame" ? bookingCtaHref : link.href === "/student/acquista-toefl-ibt" ? purchaseCtaHref : link.href}
                   >
                     Vai alla sezione
                     <span aria-hidden>→</span>

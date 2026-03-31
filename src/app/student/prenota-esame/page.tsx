@@ -2,11 +2,15 @@ import { CentersDirectoryClient } from "@/components/centers-directory-client";
 import { CtaButton } from "@/components/cta-button";
 import { getActiveCenters } from "@/lib/repositories/centers";
 import { resolveCenterSlug } from "@/lib/centers";
+import { getUserFromRequest } from "@/lib/auth";
+import { resolveStudentCtaTarget } from "@/lib/student-action-routing";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function PrenotaEsamePage() {
+  const user = await getUserFromRequest();
+  const purchaseCtaHref = resolveStudentCtaTarget(user, "buy-exam");
   let centers = [] as Awaited<ReturnType<typeof getActiveCenters>>;
   try {
     centers = await getActiveCenters();
@@ -35,7 +39,7 @@ export default async function PrenotaEsamePage() {
         </p>
 
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-          <CtaButton href="/student/acquista-toefl-ibt">Acquista il tuo esame</CtaButton>
+          <CtaButton href={purchaseCtaHref}>Acquista il tuo esame</CtaButton>
           <CtaButton href="mailto:support@toeflambassador.org" variant="secondary">
             Richiedi assistenza
           </CtaButton>
